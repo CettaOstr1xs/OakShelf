@@ -1,0 +1,106 @@
+import 'package:flutter/material.dart';
+import '../models/book.dart';
+import '../services/google_books_service.dart';
+import '../services/storage_service.dart';
+
+class BookDetailScreen extends StatefulWidget {
+  final String bookId;
+  final StorageService storageService;
+  final GoogleBooksService apiService;
+
+  const BookDetailScreen({
+    super.key,
+    required this.bookId,
+    required this.storageService,
+    required this.apiService,
+  });
+
+  @override
+  State<BookDetailScreen> createState() => _BookDetailScreenState();
+}
+
+class _BookDetailScreenState extends State<BookDetailScreen> {
+  Book? _localBook;
+  bool _isLoading = true;
+  bool _anyChanges = false;
+  bool _isDescriptionExpanded = false;
+
+  late TextEditingController _reviewController;
+  late TextEditingController _progressController;
+
+  @override
+  void initState() {
+    super.initState();
+    _reviewController = TextEditingController();
+    _progressController = TextEditingController();
+    _loadBookDetails();
+  }
+
+  @override
+  void dispose() {
+    _reviewController.dispose();
+    _progressController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadBookDetails() async {
+    setState(() => _isLoading = true);
+    
+    // 1. Try loading from local storage first
+    Book? book = widget.storageService.getBook(widget.bookId);
+
+    // 2. If not found locally, query from the Google Books API
+    if (book == null
+              decoration: const InputDecoration(
+                contentPadding: EdgeInsets.symmetric(vertical: 4),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (val) {
+                final page = int.tryParse(val) ?? 0;
+                if (totalPages > 0 && page > totalPages) {
+                  _progressController.text = totalPages.toString();
+                  // Put cursor at the end
+                  _progressController.selection = TextSelection.fromPosition(
+                    TextPosition(offset: _progressController.text.length),
+                  );
+                }
+              },
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(totalPages > 0 ? 'of $totalPages' : 'pages'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInteractiveStars() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(5, (index) {
+        final starValue = index + 1.0;
+        final isFilled = _localBook!.userRating >= starValue;
+        return IconButton(
+          icon: Icon(
+            isFilled ? Icons.star : Icons.star_border,
+            color: const Color(0xFFF2CC8F),
+            size: 38,
+          ),
+          onPressed: () {
+            setState(() {
+              if (_localBook!.userRating == starValue) {
+                _localBook!.userRating = 0.0;
+              } else {
+                _localBook!.userRating = starValue;
+              }
+            });
+          },
+        );
+      }),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+}
