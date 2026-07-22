@@ -1,69 +1,59 @@
 # Bookery
 
-A premium Flutter book tracker project.
-
-## Security & Credentials Setup
-
-To keep private API keys and credentials out of the public Git history, all configuration credentials (like the Hardcover API token and Firebase settings) are loaded dynamically at compile-time from environment variables.
-
-To run the project locally, follow these configuration steps:
-
-### 1. Hardcover and Firebase Credentials
-1. Copy the `secrets.json.example` template at the root of the project to a new file named `secrets.json`:
-   ```bash
-   cp secrets.json.example secrets.json
-   ```
-2. Open `secrets.json` and fill in your Hardcover API token and your Firebase credentials.
-3. *Note:* `secrets.json` is already added to `.gitignore` so it will never be committed to your repository.
-
-### 2. Android Configuration
-1. Copy the `android/app/google-services.json.example` template to `android/app/google-services.json`:
-   ```bash
-   cp android/app/google-services.json.example android/app/google-services.json
-   ```
-2. Open `android/app/google-services.json` and fill in your Firebase configuration parameters (especially `mobilesdk_app_id`, `project_id`, and `api_key`).
-3. *Note:* This file is also gitignored and won't be pushed.
+Bookery is a premium, beautifully designed book companion and tracker application built using Flutter. It helps book lovers organize their library, track their reading journey, set personal goals, and find inspiration through literature.
 
 ---
 
-## Running the Project
+## Key Features
 
-To run or build the app locally, pass the `secrets.json` file to the compiler using the `--dart-define-from-file` parameter:
+### 📚 Interactive Library & Shelf Management
+- **Organize Your Library:** Categorize books into shelves such as *Currently Reading*, *Want to Read*, and *Completed*.
+- **Deep Book Detail View:** Access complete metadata for books, including detailed descriptions, page counts, publisher info, and categories.
 
-### Command Line
-```bash
-flutter run --dart-define-from-file=secrets.json
-```
+### ⏱️ Reading Tracker & Analytics
+- **Track Progress:** Stay updated on how many pages you have read and what remains.
+- **Personalized Analytics:** Visualize your reading habits and velocity over time.
 
-To build a release APK:
-```bash
-flutter build apk --dart-define-from-file=secrets.json
-```
+### 🏆 Reading Challenges
+- **Milestone Goals:** Set custom reading challenges (e.g., number of books to read this year).
+- **Gamified Achievements:** Unlock milestones and visual achievements as you read more.
 
-### VS Code Configuration
-If you develop using VS Code, add the flag to your `launch.json` run configuration:
-```json
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Bookery",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "args": [
-        "--dart-define-from-file=secrets.json"
-      ]
-    }
-  ]
-}
-```
+### ✍️ Quote Collector & Highlights
+- **Daily Inspiration:** Access a curated list of literary quotes directly on your dashboard.
+- **Save Your Favorites:** Keep a personal journal of quotes that inspire you, with quick options to save and customize how they are displayed.
 
-### Android Studio Configuration
-In Android Studio / IntelliJ:
-1. Open the run configuration menu (top-right next to the green run button).
-2. Edit configurations.
-3. In the **Additional run args** field, add:
-   `--dart-define-from-file=secrets.json`
-4. Apply and save.
+### ✨ Premium User Experience
+- **Harmonious Visuals:** Hand-crafted color palettes, typography, and clean layout design.
+- **Smooth Micro-Animations:** Responsive hover effects, transitions, and gesture-driven animations (powered by `flutter_animate`) that make interactions feel premium and alive.
+- **Profile Customization:** Personalize your profile, challenge goals, and application settings.
 
+---
+
+## Tech Stack & Architecture
+
+- **Framework:** Flutter (Dart)
+- **State Management & Architecture:** Clean Service-Repository pattern with reactive UI updates.
+- **Animations:** Custom animations and transitions using `flutter_animate`.
+- **Design System:** Custom theme configurations for consistent layout, typography, and spacing tokens.
+
+---
+
+## Getting Started
+
+To run this project locally, ensure you have the Flutter SDK installed on your machine.
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/CettaOstr1xs/bookery.git
+   cd bookery
+   ```
+
+2. **Get packages:**
+   ```bash
+   flutter pub get
+   ```
+
+3. **Run the app:**
+   ```bash
+   flutter run
+   ```
