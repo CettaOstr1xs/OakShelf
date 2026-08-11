@@ -1,105 +1,128 @@
 import 'package:flutter/material.dart';
 import '../services/firebase_service.dart';
+import '../widgets/nature_ui.dart';
+import '../theme/theme.dart';
 
 class SettingsScreen extends StatefulWidget {
   final FirebaseService firebaseService;
 
-  const SettingsScreen({
-    super.key,
-    required this.firebaseService,
-  });
+  const SettingsScreen({super.key, required this.firebaseService});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _darkMode = false;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final uid = widget.firebaseService.currentUid ?? 'Not authenticated';
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-        centerTitle: true,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          // Section: Sync & Cloud Account
-          _buildSectionHeader('Cloud Integration'),
-          Card(
-            elevation: 0,
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: Colors.grey[200]!),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: AppBar(title: const Text('Settings'), centerTitle: true),
+      body: NatureBackdrop(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            NatureHeroCard(
+              startColor: BookeryTheme.oceanBlueColor,
+              endColor: BookeryTheme.primaryColor,
+              padding: const EdgeInsets.all(20),
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.cloud_done_rounded, color: Colors.green),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Firebase Sync Status: Connected',
-                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                  const Icon(
+                    Icons.cloud_done_rounded,
+                    color: BookeryTheme.accentGoldColor,
+                    size: 32,
                   ),
-                  const SizedBox(height: 12),
-                  SelectableText(
-                    'User ID: $uid',
-                    style: theme.textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Your books and quotes are securely backed up in Cloud Firestore under this anonymous identifier.',
-                    style: theme.textTheme.bodySmall,
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Your library travels with you',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          'Books, quotes, and goals sync through Firestore.',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: BookeryTheme.skyColor,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
-          const SizedBox(height: 24),
-
-          // Section: Application Config
-          _buildSectionHeader('Preferences'),
-          _buildSettingsTile(
-            icon: Icons.dark_mode_outlined,
-            title: 'Dark Theme (Placeholder)',
-            trailing: Switch(
-              value: _darkMode,
-              onChanged: (val) {
-                setState(() {
-                  _darkMode = val;
-                });
-              },
+            const SizedBox(height: 24),
+            // Section: Sync & Cloud Account
+            _buildSectionHeader('Cloud Integration'),
+            Card(
+              elevation: 0,
+              color: BookeryTheme.surfaceColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: Colors.grey[200]!),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.cloud_done_rounded,
+                          color: Colors.green,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Firebase Sync Status: Connected',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    SelectableText(
+                      'User ID: $uid',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Your books and quotes are securely backed up in Cloud Firestore under this anonymous identifier.',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-          // Section: About
-          _buildSectionHeader('About'),
-          _buildSettingsTile(
-            icon: Icons.info_outline_rounded,
-            title: 'Version',
-            subtitle: 'Bookery v1.0.0 (Firebase Edition)',
-            onTap: () {},
-          ),
-          _buildSettingsTile(
-            icon: Icons.code_rounded,
-            title: 'Developer Mode',
-            subtitle: 'Google Books REST Service Enabled',
-            onTap: () {},
-          ),
-        ],
+            // Section: About
+            _buildSectionHeader('About'),
+            _buildSettingsTile(
+              icon: Icons.info_outline_rounded,
+              title: 'Version',
+              subtitle: 'Bookery v1.0.0 (Firebase Edition)',
+              onTap: () {},
+            ),
+            _buildSettingsTile(
+              icon: Icons.code_rounded,
+              title: 'Developer Mode',
+              subtitle: 'Hardcover catalog service enabled',
+              onTap: () {},
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -130,15 +153,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.only(bottom: 8),
-      color: Colors.white,
+      color: BookeryTheme.surfaceColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: Colors.grey[200]!),
       ),
       child: ListTile(
-        leading: Icon(icon, color: theme.colorScheme.onBackground.withOpacity(0.7)),
+        leading: Icon(
+          icon,
+          color: theme.colorScheme.onBackground.withOpacity(0.7),
+        ),
         title: Text(title, style: theme.textTheme.titleSmall),
-        subtitle: subtitle != null ? Text(subtitle, style: theme.textTheme.bodySmall) : null,
+        subtitle: subtitle != null
+            ? Text(subtitle, style: theme.textTheme.bodySmall)
+            : null,
         trailing: trailing,
         onTap: onTap,
       ),

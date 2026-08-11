@@ -4,14 +4,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/quote.dart';
 import '../services/firebase_service.dart';
+import '../widgets/nature_ui.dart';
+import '../theme/theme.dart';
 
 class QuotesScreen extends StatefulWidget {
   final FirebaseService firebaseService;
 
-  const QuotesScreen({
-    super.key,
-    required this.firebaseService,
-  });
+  const QuotesScreen({super.key, required this.firebaseService});
 
   @override
   State<QuotesScreen> createState() => _QuotesScreenState();
@@ -86,7 +85,9 @@ class _QuotesScreenState extends State<QuotesScreen> {
                       labelText: 'The Quote',
                       alignLabelWithHint: true,
                       hintText: '"Write the lines here..."',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     validator: (val) {
                       if (val == null || val.trim().isEmpty) {
@@ -102,7 +103,9 @@ class _QuotesScreenState extends State<QuotesScreen> {
                     decoration: InputDecoration(
                       labelText: 'Author / Speaker',
                       hintText: 'e.g. Albert Camus',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     validator: (val) {
                       if (val == null || val.trim().isEmpty) {
@@ -118,7 +121,9 @@ class _QuotesScreenState extends State<QuotesScreen> {
                     decoration: InputDecoration(
                       labelText: 'Book Title (Optional)',
                       hintText: 'e.g. The Stranger',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -139,7 +144,9 @@ class _QuotesScreenState extends State<QuotesScreen> {
                           if (mounted) {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Quote saved to your library!')),
+                              const SnackBar(
+                                content: Text('Quote saved to your library!'),
+                              ),
                             );
                           }
                         }
@@ -152,7 +159,10 @@ class _QuotesScreenState extends State<QuotesScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('Save Quote', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Save Quote',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ],
@@ -183,7 +193,9 @@ class _QuotesScreenState extends State<QuotesScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Quote?'),
-        content: const Text('Are you sure you want to delete this saved quote?'),
+        content: const Text(
+          'Are you sure you want to delete this saved quote?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -209,10 +221,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Saved Quotes'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Field Notes'), centerTitle: true),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddQuoteSheet,
         icon: const Icon(Icons.add_rounded),
@@ -220,212 +229,307 @@ class _QuotesScreenState extends State<QuotesScreen> {
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: Colors.white,
       ),
-      body: StreamBuilder<List<Quote>>(
-        stream: widget.firebaseService.getQuotesStream(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: NatureBackdrop(
+        child: StreamBuilder<List<Quote>>(
+          stream: widget.firebaseService.getQuotesStream(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          final allQuotes = snapshot.data ?? [];
+            final allQuotes = snapshot.data ?? [];
 
-          return ValueListenableBuilder<String>(
-            valueListenable: _searchQueryNotifier,
-            builder: (context, searchQuery, _) {
-              final filteredQuotes = allQuotes.where((q) {
-                if (searchQuery.trim().isEmpty) return true;
-                final query = searchQuery.toLowerCase();
-                final textMatch = q.quoteText.toLowerCase().contains(query);
-                final authorMatch = q.author.toLowerCase().contains(query);
-                final bookMatch = q.bookTitle.toLowerCase().contains(query);
-                return textMatch || authorMatch || bookMatch;
-              }).toList();
+            return ValueListenableBuilder<String>(
+              valueListenable: _searchQueryNotifier,
+              builder: (context, searchQuery, _) {
+                final filteredQuotes = allQuotes.where((q) {
+                  if (searchQuery.trim().isEmpty) return true;
+                  final query = searchQuery.toLowerCase();
+                  final textMatch = q.quoteText.toLowerCase().contains(query);
+                  final authorMatch = q.author.toLowerCase().contains(query);
+                  final bookMatch = q.bookTitle.toLowerCase().contains(query);
+                  return textMatch || authorMatch || bookMatch;
+                }).toList();
 
-              return Column(
-                children: [
-                  // Quotes Search Bar
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: 'Search quotes by text, author, or book...',
-                        prefixIcon: const Icon(Icons.search_rounded),
-                        suffixIcon: searchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear_rounded),
-                                onPressed: () {
-                                  _searchController.clear();
-                                  _searchQueryNotifier.value = '';
-                                },
-                              )
-                            : null,
-                        filled: true,
-                        fillColor: theme.colorScheme.primary.withOpacity(0.05),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      onChanged: (val) {
-                        _searchQueryNotifier.value = val;
-                      },
-                    ),
-                  ),
-
-                  Expanded(
-                    child: filteredQuotes.isEmpty
-                        ? Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(24.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.format_quote_rounded, size: 56, color: Colors.grey[300]),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    searchQuery.isNotEmpty
-                                        ? 'No quotes matching "$searchQuery"'
-                                        : 'No saved quotes yet.',
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      color: Colors.grey[600],
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    searchQuery.isNotEmpty
-                                        ? 'Try searching for different keywords.'
-                                        : 'Tap "+ Add Quote" below to save your favorite book lines.',
-                                    textAlign: TextAlign.center,
-                                    style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
-                                  ),
-                                ],
-                              ),
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: BookeryTheme.sandColor,
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
-                            itemCount: filteredQuotes.length,
-                            itemBuilder: (context, index) {
-                              final quote = filteredQuotes[index];
-                              final hasBook = quote.bookTitle.trim().isNotEmpty;
-                              final attributionText = hasBook
-                                  ? '— ${quote.author} in ${quote.bookTitle}'
-                                  : '— ${quote.author}';
+                            child: const Icon(
+                              Icons.auto_stories_rounded,
+                              color: Color(0xFF9A6D00),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Lines worth keeping',
+                                  style: theme.textTheme.titleLarge,
+                                ),
+                                Text(
+                                  '${allQuotes.length} saved reflections',
+                                  style: theme.textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Quotes Search Bar
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search quotes by text, author, or book...',
+                          prefixIcon: const Icon(Icons.search_rounded),
+                          suffixIcon: searchQuery.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear_rounded),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    _searchQueryNotifier.value = '';
+                                  },
+                                )
+                              : null,
+                          filled: true,
+                          fillColor: BookeryTheme.surfaceColor,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        onChanged: (val) {
+                          _searchQueryNotifier.value = val;
+                        },
+                      ),
+                    ),
 
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 16),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFAF7F2), // Warm literary paper card background
-                                  borderRadius: BorderRadius.circular(18),
-                                  border: Border.all(
-                                    color: theme.colorScheme.primary.withOpacity(0.12),
-                                    width: 1.2,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.03),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
+                    Expanded(
+                      child: filteredQuotes.isEmpty
+                          ? Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(24.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    NatureEmptyState(
+                                      icon: Icons.format_quote_rounded,
+                                      title: searchQuery.isNotEmpty
+                                          ? 'No matching field notes'
+                                          : 'Your field notes are empty',
+                                      message: searchQuery.isNotEmpty
+                                          ? 'Try a different phrase, author, or book title.'
+                                          : 'Save lines that stay with you while reading.',
                                     ),
                                   ],
                                 ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(18),
-                                  child: IntrinsicHeight(
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                                      children: [
-                                        // Left Accent Bar
-                                        Container(
-                                          width: 5,
-                                          color: theme.colorScheme.primary,
-                                        ),
+                              ),
+                            )
+                          : ListView.builder(
+                              padding: const EdgeInsets.fromLTRB(
+                                16,
+                                8,
+                                16,
+                                110,
+                              ),
+                              itemCount: filteredQuotes.length,
+                              itemBuilder: (context, index) {
+                                final quote = filteredQuotes[index];
+                                final hasBook = quote.bookTitle
+                                    .trim()
+                                    .isNotEmpty;
+                                final attributionText = hasBook
+                                    ? '— ${quote.author} in ${quote.bookTitle}'
+                                    : '— ${quote.author}';
 
-                                        // Main Card Content (Balanced & Centered)
-                                        Expanded(
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(16, 14, 14, 16),
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                // Header Row: Quote Icon & Actions
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Icon(
-                                                      Icons.format_quote_rounded,
-                                                      color: theme.colorScheme.primary.withOpacity(0.5),
-                                                      size: 22,
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        IconButton(
-                                                          constraints: const BoxConstraints(),
-                                                          padding: const EdgeInsets.all(4),
-                                                          icon: const Icon(Icons.copy_rounded, size: 17),
-                                                          color: Colors.grey[500],
-                                                          tooltip: 'Copy Quote',
-                                                          onPressed: () => _copyQuoteToClipboard(quote),
-                                                        ),
-                                                        const SizedBox(width: 4),
-                                                        IconButton(
-                                                          constraints: const BoxConstraints(),
-                                                          padding: const EdgeInsets.all(4),
-                                                          icon: const Icon(Icons.delete_outline_rounded, size: 17),
-                                                          color: Colors.grey[400],
-                                                          tooltip: 'Delete Quote',
-                                                          onPressed: () => _confirmDeleteQuote(quote.id),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 8),
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  decoration: BoxDecoration(
+                                    color: BookeryTheme.surfaceColor,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: BookeryTheme.outlineColor,
+                                      width: 1.2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.03),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: IntrinsicHeight(
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          // Left Accent Bar
+                                          Container(
+                                            width: 5,
+                                            color: index.isEven
+                                                ? BookeryTheme.primaryColor
+                                                : BookeryTheme.oceanBlueColor,
+                                          ),
 
-                                                // Quote Text (Left-aligned)
-                                                Text(
-                                                  '"${quote.quoteText}"',
-                                                  textAlign: TextAlign.left,
-                                                  style: GoogleFonts.newsreader(
-                                                    fontSize: 16.5,
-                                                    fontStyle: FontStyle.italic,
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 1.45,
-                                                    color: const Color(0xFF1E293B),
+                                          // Main Card Content (Balanced & Centered)
+                                          Expanded(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                    16,
+                                                    14,
+                                                    14,
+                                                    16,
                                                   ),
-                                                ),
-                                                const SizedBox(height: 12),
-
-                                                // Bottom Attribution (Left-aligned: "— Author in Book Title")
-                                                Text(
-                                                  attributionText,
-                                                  textAlign: TextAlign.left,
-                                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: theme.colorScheme.primary,
-                                                    fontSize: 13,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  // Header Row: Quote Icon & Actions
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Icon(
+                                                        Icons
+                                                            .format_quote_rounded,
+                                                        color: theme
+                                                            .colorScheme
+                                                            .primary
+                                                            .withOpacity(0.5),
+                                                        size: 22,
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          IconButton(
+                                                            constraints:
+                                                                const BoxConstraints(),
+                                                            padding:
+                                                                const EdgeInsets.all(
+                                                                  4,
+                                                                ),
+                                                            icon: const Icon(
+                                                              Icons
+                                                                  .copy_rounded,
+                                                              size: 17,
+                                                            ),
+                                                            color: Colors
+                                                                .grey[500],
+                                                            tooltip:
+                                                                'Copy Quote',
+                                                            onPressed: () =>
+                                                                _copyQuoteToClipboard(
+                                                                  quote,
+                                                                ),
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 4,
+                                                          ),
+                                                          IconButton(
+                                                            constraints:
+                                                                const BoxConstraints(),
+                                                            padding:
+                                                                const EdgeInsets.all(
+                                                                  4,
+                                                                ),
+                                                            icon: const Icon(
+                                                              Icons
+                                                                  .delete_outline_rounded,
+                                                              size: 17,
+                                                            ),
+                                                            color: Colors
+                                                                .grey[400],
+                                                            tooltip:
+                                                                'Delete Quote',
+                                                            onPressed: () =>
+                                                                _confirmDeleteQuote(
+                                                                  quote.id,
+                                                                ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
                                                   ),
-                                                ),
-                                              ],
+                                                  const SizedBox(height: 8),
+
+                                                  // Quote Text (Left-aligned)
+                                                  Text(
+                                                    '"${quote.quoteText}"',
+                                                    textAlign: TextAlign.left,
+                                                    style:
+                                                        GoogleFonts.newsreader(
+                                                          fontSize: 16.5,
+                                                          fontStyle:
+                                                              FontStyle.italic,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          height: 1.45,
+                                                          color: const Color(
+                                                            0xFF1E293B,
+                                                          ),
+                                                        ),
+                                                  ),
+                                                  const SizedBox(height: 12),
+
+                                                  // Bottom Attribution (Left-aligned: "— Author in Book Title")
+                                                  Text(
+                                                    attributionText,
+                                                    textAlign: TextAlign.left,
+                                                    style: theme
+                                                        .textTheme
+                                                        .bodyMedium
+                                                        ?.copyWith(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: theme
+                                                              .colorScheme
+                                                              .primary,
+                                                          fontSize: 13,
+                                                        ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ).animate().fadeIn(duration: 300.ms, delay: (index * 35).ms);
-                            },
-                          ),
-                  ),
-                ],
-              );
-            },
-          );
-        },
+                                ).animate().fadeIn(
+                                  duration: 300.ms,
+                                  delay: (index * 35).ms,
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

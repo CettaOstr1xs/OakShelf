@@ -7,6 +7,7 @@ import 'quotes_screen.dart';
 import 'search_screen.dart';
 import 'profile_screen.dart';
 import 'settings_screen.dart';
+import '../theme/theme.dart';
 
 class MainNavigationContainer extends StatefulWidget {
   final FirebaseService firebaseService;
@@ -19,7 +20,8 @@ class MainNavigationContainer extends StatefulWidget {
   });
 
   @override
-  State<MainNavigationContainer> createState() => _MainNavigationContainerState();
+  State<MainNavigationContainer> createState() =>
+      _MainNavigationContainerState();
 }
 
 class _MainNavigationContainerState extends State<MainNavigationContainer> {
@@ -40,9 +42,7 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
         firebaseService: widget.firebaseService,
         apiService: widget.apiService,
       ),
-      QuotesScreen(
-        firebaseService: widget.firebaseService,
-      ),
+      QuotesScreen(firebaseService: widget.firebaseService),
     ];
   }
 
@@ -151,10 +151,17 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
                         height: 50,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: theme.colorScheme.primary, width: 2),
+                          border: Border.all(
+                            color: theme.colorScheme.primary,
+                            width: 2,
+                          ),
                           color: theme.colorScheme.primary.withOpacity(0.1),
                         ),
-                        child: Icon(Icons.person, color: theme.colorScheme.primary, size: 28),
+                        child: Icon(
+                          Icons.person,
+                          color: theme.colorScheme.primary,
+                          size: 28,
+                        ),
                       ),
                       const SizedBox(width: 16),
 
@@ -189,8 +196,14 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
 
               // Menu Grid List
               ListTile(
-                leading: Icon(Icons.person_outline, color: theme.colorScheme.primary),
-                title: Text('View Profile Stats', style: theme.textTheme.titleSmall),
+                leading: Icon(
+                  Icons.person_outline,
+                  color: theme.colorScheme.primary,
+                ),
+                title: Text(
+                  'View Profile Stats',
+                  style: theme.textTheme.titleSmall,
+                ),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 14),
                 onTap: () {
                   Navigator.pop(context);
@@ -206,8 +219,14 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
               ),
               Divider(height: 1, color: Colors.grey[100]),
               ListTile(
-                leading: Icon(Icons.settings_outlined, color: theme.colorScheme.primary),
-                title: Text('Settings & Database', style: theme.textTheme.titleSmall),
+                leading: Icon(
+                  Icons.settings_outlined,
+                  color: theme.colorScheme.primary,
+                ),
+                title: Text(
+                  'Settings & Database',
+                  style: theme.textTheme.titleSmall,
+                ),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 14),
                 onTap: () {
                   Navigator.pop(context);
@@ -231,12 +250,12 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
     // Map current index in page view (which has 3 items)
     // to active state index on bottom bar
     int getSelectedBarIndex() {
-      if (_currentIndex == 2) return 3; // Quotes is at index 3 in bar (due to Plus button at 2)
+      if (_currentIndex == 2) {
+        return 3; // Quotes is at index 3 in bar (due to Plus button at 2)
+      }
       return _currentIndex;
     }
 
@@ -271,35 +290,61 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
                 children: [
                   // Floating Pill Backdrop Box
                   Container(
-                    margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-                    height: 70,
+                    margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+                    height: 72,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(35),
+                      color: BookeryTheme.surfaceColor.withValues(alpha: 0.98),
+                      borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
+                          color: BookeryTheme.forestDeep.withValues(
+                            alpha: 0.16,
+                          ),
+                          blurRadius: 24,
+                          offset: const Offset(0, 10),
                         ),
                       ],
-                      border: Border.all(color: Colors.grey[100]!),
+                      border: Border.all(color: BookeryTheme.outlineColor),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         // 1. Home / Dashboard Feed
-                        _buildNavItem(0, Icons.home_rounded, Icons.home_outlined, activeBarIndex),
+                        _buildNavItem(
+                          0,
+                          Icons.home_rounded,
+                          Icons.home_outlined,
+                          activeBarIndex,
+                          'Home',
+                        ),
                         // 2. Library (Bookshelf)
-                        _buildNavItem(1, Icons.menu_book_rounded, Icons.menu_book_outlined, activeBarIndex),
-                        
+                        _buildNavItem(
+                          1,
+                          Icons.menu_book_rounded,
+                          Icons.menu_book_outlined,
+                          activeBarIndex,
+                          'Bookshelf',
+                        ),
+
                         // Spacer placeholder for the middle floating Plus button
                         const SizedBox(width: 52),
-                        
+
                         // 4. Quotes
-                        _buildNavItem(3, Icons.format_quote_rounded, Icons.format_quote_outlined, activeBarIndex),
+                        _buildNavItem(
+                          3,
+                          Icons.format_quote_rounded,
+                          Icons.format_quote_outlined,
+                          activeBarIndex,
+                          'Quotes',
+                        ),
                         // 5. More (Menu)
-                        _buildNavItem(4, Icons.menu_rounded, Icons.menu_rounded, activeBarIndex),
+                        _buildNavItem(
+                          4,
+                          Icons.menu_rounded,
+                          Icons.menu_rounded,
+                          activeBarIndex,
+                          'More',
+                        ),
                       ],
                     ),
                   ),
@@ -307,26 +352,36 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
                   // Floating Center Plus Button (Taps Search Screen)
                   Positioned(
                     bottom: 28,
-                    child: GestureDetector(
-                      onTap: () => _onTabSelected(2),
-                      child: Container(
-                        width: 58,
-                        height: 58,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.onBackground, // Dark Charcoal
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: theme.colorScheme.onBackground.withOpacity(0.25),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
+                    child: Semantics(
+                      button: true,
+                      label: 'Search books',
+                      child: GestureDetector(
+                        onTap: () => _onTabSelected(2),
+                        child: Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            color: BookeryTheme.accentGoldColor,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: BookeryTheme.surfaceColor,
+                              width: 4,
                             ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 30,
+                            boxShadow: [
+                              BoxShadow(
+                                color: BookeryTheme.forestDeep.withValues(
+                                  alpha: 0.22,
+                                ),
+                                blurRadius: 14,
+                                offset: const Offset(0, 7),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.search_rounded,
+                            color: BookeryTheme.textDarkColor,
+                            size: 28,
+                          ),
                         ),
                       ),
                     ),
@@ -340,24 +395,35 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
     );
   }
 
-  Widget _buildNavItem(int index, IconData activeIcon, IconData inactiveIcon, int activeBarIndex) {
+  Widget _buildNavItem(
+    int index,
+    IconData activeIcon,
+    IconData inactiveIcon,
+    int activeBarIndex,
+    String tooltip,
+  ) {
     final theme = Theme.of(context);
     final isSelected = activeBarIndex == index;
 
     return IconButton(
       onPressed: () => _onTabSelected(index),
+      tooltip: tooltip,
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       icon: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primary.withOpacity(0.08) : Colors.transparent,
-          shape: BoxShape.circle,
+          color: isSelected
+              ? theme.colorScheme.primaryContainer
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
           isSelected ? activeIcon : inactiveIcon,
-          color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onBackground.withOpacity(0.6),
+          color: isSelected
+              ? theme.colorScheme.primary
+              : theme.colorScheme.onSurfaceVariant,
           size: 26,
         ),
       ),

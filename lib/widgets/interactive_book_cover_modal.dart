@@ -1,5 +1,6 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
+import '../theme/theme.dart';
+import 'nature_ui.dart';
 
 class InteractiveBookCoverModal extends StatefulWidget {
   final String heroTag;
@@ -26,7 +27,7 @@ class InteractiveBookCoverModal extends StatefulWidget {
       PageRouteBuilder(
         opaque: false,
         barrierDismissible: true,
-        barrierColor: Colors.black.withOpacity(0.85),
+        barrierColor: BookeryTheme.forestDeep.withValues(alpha: 0.92),
         transitionDuration: const Duration(milliseconds: 280),
         reverseTransitionDuration: const Duration(milliseconds: 240),
         pageBuilder: (context, animation, secondaryAnimation) {
@@ -45,10 +46,12 @@ class InteractiveBookCoverModal extends StatefulWidget {
   }
 
   @override
-  State<InteractiveBookCoverModal> createState() => _InteractiveBookCoverModalState();
+  State<InteractiveBookCoverModal> createState() =>
+      _InteractiveBookCoverModalState();
 }
 
-class _InteractiveBookCoverModalState extends State<InteractiveBookCoverModal> with SingleTickerProviderStateMixin {
+class _InteractiveBookCoverModalState extends State<InteractiveBookCoverModal>
+    with SingleTickerProviderStateMixin {
   // 3D Rotation Angles (Starts perfectly straight and upright)
   double _rotateX = 0.0;
   double _rotateY = 0.0;
@@ -146,7 +149,10 @@ class _InteractiveBookCoverModalState extends State<InteractiveBookCoverModal> w
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.16),
                       borderRadius: BorderRadius.circular(20),
@@ -154,11 +160,19 @@ class _InteractiveBookCoverModalState extends State<InteractiveBookCoverModal> w
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: const [
-                        Icon(Icons.touch_app_rounded, color: Colors.white, size: 14),
+                        Icon(
+                          Icons.touch_app_rounded,
+                          color: Colors.white,
+                          size: 14,
+                        ),
                         SizedBox(width: 6),
                         Text(
                           'Drag book to tilt in 3D',
-                          style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
@@ -171,7 +185,11 @@ class _InteractiveBookCoverModalState extends State<InteractiveBookCoverModal> w
                         color: Colors.white.withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.close, color: Colors.white, size: 20),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ],
@@ -203,7 +221,10 @@ class _InteractiveBookCoverModalState extends State<InteractiveBookCoverModal> w
                               color: Colors.black.withOpacity(0.55),
                               blurRadius: 24,
                               spreadRadius: 1,
-                              offset: Offset(-_rotateY * 20, 14 + _rotateX * 14),
+                              offset: Offset(
+                                -_rotateY * 20,
+                                14 + _rotateX * 14,
+                              ),
                             ),
                           ],
                         ),
@@ -219,13 +240,28 @@ class _InteractiveBookCoverModalState extends State<InteractiveBookCoverModal> w
                                       height: coverHeight,
                                       fit: BoxFit.cover,
                                       errorBuilder: (context, error, stack) =>
-                                          _buildFallbackCover(widget.title, coverWidth, coverHeight),
+                                          NatureBookCover(
+                                            imageUrl: '',
+                                            title: widget.title,
+                                            width: coverWidth,
+                                            height: coverHeight,
+                                            radius: 8,
+                                          ),
                                     )
-                                  : _buildFallbackCover(widget.title, coverWidth, coverHeight),
+                                  : NatureBookCover(
+                                      imageUrl: '',
+                                      title: widget.title,
+                                      width: coverWidth,
+                                      height: coverHeight,
+                                      radius: 8,
+                                    ),
 
                               // Spine shadow line (Left edge)
                               Positioned(
-                                left: 0, top: 0, bottom: 0, width: 12,
+                                left: 0,
+                                top: 0,
+                                bottom: 0,
+                                width: 12,
                                 child: Container(
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
@@ -246,11 +282,20 @@ class _InteractiveBookCoverModalState extends State<InteractiveBookCoverModal> w
                                   child: Container(
                                     decoration: BoxDecoration(
                                       gradient: LinearGradient(
-                                        begin: Alignment(-_rotateY * 2.5, -_rotateX * 2.5),
-                                        end: Alignment(_rotateY * 2.5, _rotateX * 2.5),
+                                        begin: Alignment(
+                                          -_rotateY * 2.5,
+                                          -_rotateX * 2.5,
+                                        ),
+                                        end: Alignment(
+                                          _rotateY * 2.5,
+                                          _rotateX * 2.5,
+                                        ),
                                         colors: [
                                           Colors.white.withOpacity(0.0),
-                                          Colors.white.withOpacity((_rotateX.abs() + _rotateY.abs()).clamp(0.0, 0.22)),
+                                          Colors.white.withOpacity(
+                                            (_rotateX.abs() + _rotateY.abs())
+                                                .clamp(0.0, 0.22),
+                                          ),
                                           Colors.white.withOpacity(0.0),
                                         ],
                                         stops: const [0.35, 0.5, 0.65],
@@ -302,25 +347,6 @@ class _InteractiveBookCoverModalState extends State<InteractiveBookCoverModal> w
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFallbackCover(String title, double width, double height) {
-    return Container(
-      width: width,
-      height: height,
-      color: const Color(0xFF2F3E46),
-      padding: const EdgeInsets.all(20),
-      alignment: Alignment.center,
-      child: Text(
-        title,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
         ),
       ),
     );

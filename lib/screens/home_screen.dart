@@ -3,6 +3,8 @@ import '../models/book.dart';
 import '../services/google_books_service.dart';
 import '../services/firebase_service.dart';
 import '../widgets/profile_menu_sheet.dart';
+import '../widgets/nature_ui.dart';
+import '../theme/theme.dart';
 import 'book_detail_screen.dart';
 import 'reading_challenge_screen.dart';
 import 'full_showcase_screen.dart';
@@ -32,7 +34,11 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  List<Book> _filterBooks(List<Book> books, ShelfStatus status, String searchQuery) {
+  List<Book> _filterBooks(
+    List<Book> books,
+    ShelfStatus status,
+    String searchQuery,
+  ) {
     return books.where((book) {
       if (book.shelf != status) return false;
       if (searchQuery.trim().isEmpty) return true;
@@ -43,7 +49,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }).toList();
   }
 
-  List<Book> _filterCustomBooks(List<Book> books, String customShelfName, String searchQuery) {
+  List<Book> _filterCustomBooks(
+    List<Book> books,
+    String customShelfName,
+    String searchQuery,
+  ) {
     return books.where((book) {
       if (!book.customShelves.contains(customShelfName)) return false;
       if (searchQuery.trim().isEmpty) return true;
@@ -66,7 +76,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _openFullShowcase(ShelfStatus status, String title, {String? customShelfName}) {
+  void _openFullShowcase(
+    ShelfStatus status,
+    String title, {
+    String? customShelfName,
+  }) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -93,20 +107,29 @@ class _HomeScreenState extends State<HomeScreen> {
       transitionDuration: const Duration(milliseconds: 280),
       pageBuilder: (context, anim1, anim2) => const SizedBox.shrink(),
       transitionBuilder: (context, anim1, anim2, child) {
-        final curvedAnim = CurvedAnimation(parent: anim1, curve: Curves.easeOutBack);
+        final curvedAnim = CurvedAnimation(
+          parent: anim1,
+          curve: Curves.easeOutBack,
+        );
         return ScaleTransition(
           scale: Tween<double>(begin: 0.82, end: 1.0).animate(curvedAnim),
           child: FadeTransition(
             opacity: anim1,
             child: AlertDialog(
-              backgroundColor: theme.colorScheme.background, // Same color as page background
+              backgroundColor:
+                  theme.colorScheme.background, // Same color as page background
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
-                side: BorderSide(color: theme.colorScheme.primary.withOpacity(0.15)),
+                side: BorderSide(
+                  color: theme.colorScheme.primary.withOpacity(0.15),
+                ),
               ),
               title: Row(
                 children: [
-                  Icon(Icons.folder_special_rounded, color: theme.colorScheme.primary),
+                  Icon(
+                    Icons.folder_special_rounded,
+                    color: theme.colorScheme.primary,
+                  ),
                   const SizedBox(width: 8),
                   const Text('Create New Bookshelf'),
                 ],
@@ -115,7 +138,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Enter a custom name for your new bookshelf collection:'),
+                  const Text(
+                    'Enter a custom name for your new bookshelf collection:',
+                  ),
                   const SizedBox(height: 14),
                   TextField(
                     controller: controller,
@@ -123,7 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     decoration: InputDecoration(
                       labelText: 'Bookshelf Name',
                       hintText: 'e.g. Favorites, Sci-Fi, Classics',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
                   ),
                 ],
@@ -141,7 +168,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Custom bookshelf "$shelfName" created!')),
+                          SnackBar(
+                            content: Text(
+                              'Custom bookshelf "$shelfName" created!',
+                            ),
+                          ),
                         );
                       }
                     }
@@ -149,7 +180,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: const Text('Create Bookshelf'),
                 ),
@@ -168,7 +201,9 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Theme.of(context).colorScheme.background,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text('Delete "$shelfName"?'),
-        content: Text('Are you sure you want to delete the custom bookshelf "$shelfName"? Books inside will not be deleted.'),
+        content: Text(
+          'Are you sure you want to delete the custom bookshelf "$shelfName"? Books inside will not be deleted.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -195,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Bookshelf'),
+        title: const Text('My Library'),
         centerTitle: true,
         actions: [
           GestureDetector(
@@ -209,238 +244,316 @@ class _HomeScreenState extends State<HomeScreen> {
               child: CircleAvatar(
                 radius: 17,
                 backgroundColor: theme.colorScheme.primary.withOpacity(0.12),
-                child: Icon(Icons.person_rounded, size: 20, color: theme.colorScheme.primary),
+                child: Icon(
+                  Icons.person_rounded,
+                  size: 20,
+                  color: theme.colorScheme.primary,
+                ),
               ),
             ),
           ),
         ],
       ),
-      body: StreamBuilder<List<Book>>(
-        stream: widget.firebaseService.getBookShelfStream(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: NatureBackdrop(
+        child: StreamBuilder<List<Book>>(
+          stream: widget.firebaseService.getBookShelfStream(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const NatureErrorState(
+                title: 'Your library could not load',
+                message:
+                    'Bookery could not read your saved books. Check your connection or Firebase setup, then try again.',
+              );
+            }
 
-          final allBooks = snapshot.data ?? [];
-          final finishedCount = allBooks.where((b) => b.shelf == ShelfStatus.read).length;
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          return StreamBuilder<List<String>>(
-            stream: widget.firebaseService.getCustomShelvesStream(),
-            builder: (context, customSnapshot) {
-              final customShelves = customSnapshot.data ?? [];
+            final allBooks = snapshot.data ?? [];
+            final finishedCount = allBooks
+                .where((b) => b.shelf == ShelfStatus.read)
+                .length;
 
-              return ValueListenableBuilder<String>(
-                valueListenable: _searchQueryNotifier,
-                builder: (context, searchQuery, _) {
-                  final readingBooks = _filterBooks(allBooks, ShelfStatus.reading, searchQuery);
-                  final wantToReadBooks = _filterBooks(allBooks, ShelfStatus.wantToRead, searchQuery);
-                  final readBooks = _filterBooks(allBooks, ShelfStatus.read, searchQuery);
+            return StreamBuilder<List<String>>(
+              stream: widget.firebaseService.getCustomShelvesStream(),
+              builder: (context, customSnapshot) {
+                if (customSnapshot.hasError) {
+                  return const NatureErrorState(
+                    title: 'Custom shelves are unavailable',
+                    message:
+                        'Your standard shelves are safe, but custom shelf data could not be loaded.',
+                  );
+                }
 
-                  return SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Bookshelf Search Bar
-                        TextField(
-                          controller: _searchController,
-                          decoration: InputDecoration(
-                            hintText: 'Search my bookshelf by title or author...',
-                            prefixIcon: const Icon(Icons.search_rounded),
-                            suffixIcon: searchQuery.isNotEmpty
-                                ? IconButton(
-                                    icon: const Icon(Icons.clear_rounded),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      _searchQueryNotifier.value = '';
-                                    },
-                                  )
-                                : null,
-                            filled: true,
-                            fillColor: theme.colorScheme.primary.withOpacity(0.05),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide.none,
-                            ),
+                final customShelves = customSnapshot.data ?? [];
+
+                return ValueListenableBuilder<String>(
+                  valueListenable: _searchQueryNotifier,
+                  builder: (context, searchQuery, _) {
+                    final readingBooks = _filterBooks(
+                      allBooks,
+                      ShelfStatus.reading,
+                      searchQuery,
+                    );
+                    final wantToReadBooks = _filterBooks(
+                      allBooks,
+                      ShelfStatus.wantToRead,
+                      searchQuery,
+                    );
+                    final readBooks = _filterBooks(
+                      allBooks,
+                      ShelfStatus.read,
+                      searchQuery,
+                    );
+
+                    return SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Your reading garden',
+                            style: theme.textTheme.headlineMedium,
                           ),
-                          onChanged: (val) {
-                            _searchQueryNotifier.value = val;
-                          },
-                        ),
-                        const SizedBox(height: 18),
-
-                        // READING CHALLENGE BANNER CONTAINER
-                        StreamBuilder<int>(
-                          stream: widget.firebaseService.getReadingGoalStream(),
-                          builder: (context, goalSnapshot) {
-                            final goal = goalSnapshot.data ?? 12;
-                            final progress = (finishedCount / goal).clamp(0.0, 1.0);
-                            final percent = (progress * 100).toInt();
-
-                            return GestureDetector(
-                              onTap: _openReadingChallenge,
-                              child: Card(
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(18),
-                                  side: BorderSide(color: theme.colorScheme.primary.withOpacity(0.18), width: 1.5),
-                                ),
-                                color: theme.colorScheme.primary.withOpacity(0.06),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Icon(Icons.emoji_events_rounded, color: Colors.amber[700], size: 24),
-                                              const SizedBox(width: 8),
-                                              Text(
-                                                '2026 Reading Challenge',
-                                                style: theme.textTheme.titleMedium?.copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Icon(Icons.chevron_right_rounded, color: theme.colorScheme.primary),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            '$finishedCount of $goal books completed',
-                                            style: theme.textTheme.bodySmall?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                              color: theme.colorScheme.primary,
-                                            ),
-                                          ),
-                                          Text(
-                                            '$percent%',
-                                            style: theme.textTheme.bodySmall?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: theme.colorScheme.primary,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 6),
-
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(6),
-                                        child: LinearProgressIndicator(
-                                          value: progress,
-                                          minHeight: 8,
-                                          backgroundColor: theme.colorScheme.primary.withOpacity(0.12),
-                                          valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 24),
-
-                        // STANDARD SHELF SECTIONS
-                        _buildShelfSection(
-                          context: context,
-                          title: 'Reading Now',
-                          books: readingBooks,
-                          shelfStatus: ShelfStatus.reading,
-                          icon: Icons.menu_book_rounded,
-                          isReadingShelf: true,
-                          searchQuery: searchQuery,
-                        ),
-                        const SizedBox(height: 28),
-                        _buildShelfSection(
-                          context: context,
-                          title: 'Wishlist (Want to Read)',
-                          books: wantToReadBooks,
-                          shelfStatus: ShelfStatus.wantToRead,
-                          icon: Icons.bookmark_add_rounded,
-                          isReadingShelf: false,
-                          searchQuery: searchQuery,
-                        ),
-                        const SizedBox(height: 28),
-                        _buildShelfSection(
-                          context: context,
-                          title: 'Finished Books',
-                          books: readBooks,
-                          shelfStatus: ShelfStatus.read,
-                          icon: Icons.library_add_check_rounded,
-                          isReadingShelf: false,
-                          showRatings: true,
-                          searchQuery: searchQuery,
-                        ),
-
-                        // USER CUSTOM CREATED BOOKSHELVES
-                        if (customShelves.isNotEmpty) ...[
-                          const SizedBox(height: 32),
-                          Row(
-                            children: [
-                              Icon(Icons.folder_special_rounded, color: theme.colorScheme.primary, size: 20),
-                              const SizedBox(width: 8),
-                              Text(
-                                'My Custom Bookshelves',
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: theme.colorScheme.primary,
-                                ),
-                              ),
-                            ],
+                          const SizedBox(height: 4),
+                          Text(
+                            'Keep every story you are growing in one place.',
+                            style: theme.textTheme.bodyMedium,
                           ),
                           const SizedBox(height: 16),
-                          ...customShelves.map((shelfName) {
-                            final customBooks = _filterCustomBooks(allBooks, shelfName, searchQuery);
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 28.0),
-                              child: _buildCustomShelfSection(
-                                context: context,
-                                shelfName: shelfName,
-                                books: customBooks,
-                                searchQuery: searchQuery,
+
+                          // Bookshelf Search Bar
+                          TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              hintText:
+                                  'Search my bookshelf by title or author...',
+                              prefixIcon: const Icon(Icons.search_rounded),
+                              suffixIcon: searchQuery.isNotEmpty
+                                  ? IconButton(
+                                      icon: const Icon(Icons.clear_rounded),
+                                      onPressed: () {
+                                        _searchController.clear();
+                                        _searchQueryNotifier.value = '';
+                                      },
+                                    )
+                                  : null,
+                              filled: true,
+                              fillColor: BookeryTheme.surfaceColor,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
                               ),
-                            );
-                          }).toList(),
-                        ],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            onChanged: (val) {
+                              _searchQueryNotifier.value = val;
+                            },
+                          ),
+                          const SizedBox(height: 18),
 
-                        const SizedBox(height: 20),
+                          // READING CHALLENGE BANNER CONTAINER
+                          StreamBuilder<int>(
+                            stream: widget.firebaseService
+                                .getReadingGoalStream(),
+                            builder: (context, goalSnapshot) {
+                              final goal = goalSnapshot.data ?? 12;
+                              final progress = (finishedCount / goal).clamp(
+                                0.0,
+                                1.0,
+                              );
+                              final percent = (progress * 100).toInt();
 
-                        // CREATE NEW BOOKSHELF BUTTON (Positioned at the bottom of the page)
-                        Center(
-                          child: OutlinedButton.icon(
-                            onPressed: _openCreateBookshelfDialog,
-                            icon: const Icon(Icons.add_rounded),
-                            label: const Text('Create New Bookshelf'),
-                            style: OutlinedButton.styleFrom(
-                              minimumSize: const Size(double.infinity, 48),
-                              foregroundColor: theme.colorScheme.primary,
-                              side: BorderSide(color: theme.colorScheme.primary.withOpacity(0.4), width: 1.5),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              return NatureHeroCard(
+                                startColor: BookeryTheme.oceanBlueColor,
+                                endColor: BookeryTheme.primaryColor,
+                                onTap: _openReadingChallenge,
+                                padding: const EdgeInsets.all(18),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.emoji_events_rounded,
+                                              color:
+                                                  BookeryTheme.accentGoldColor,
+                                              size: 24,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              '2026 Reading Challenge',
+                                              style: theme.textTheme.titleMedium
+                                                  ?.copyWith(
+                                                    color: Colors.white,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        const Icon(
+                                          Icons.chevron_right_rounded,
+                                          color: Colors.white,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          '$finishedCount of $goal books completed',
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                                color: BookeryTheme.skyColor,
+                                              ),
+                                        ),
+                                        Text(
+                                          '$percent%',
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: BookeryTheme
+                                                    .accentGoldColor,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 6),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(6),
+                                      child: LinearProgressIndicator(
+                                        value: progress,
+                                        minHeight: 8,
+                                        backgroundColor: Colors.white
+                                            .withValues(alpha: 0.2),
+                                        valueColor:
+                                            const AlwaysStoppedAnimation<Color>(
+                                              BookeryTheme.accentGoldColor,
+                                            ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 24),
+
+                          // STANDARD SHELF SECTIONS
+                          _buildShelfSection(
+                            context: context,
+                            title: 'Reading Now',
+                            books: readingBooks,
+                            shelfStatus: ShelfStatus.reading,
+                            icon: Icons.menu_book_rounded,
+                            isReadingShelf: true,
+                            searchQuery: searchQuery,
+                          ),
+                          const SizedBox(height: 28),
+                          _buildShelfSection(
+                            context: context,
+                            title: 'Wishlist (Want to Read)',
+                            books: wantToReadBooks,
+                            shelfStatus: ShelfStatus.wantToRead,
+                            icon: Icons.bookmark_add_rounded,
+                            isReadingShelf: false,
+                            searchQuery: searchQuery,
+                          ),
+                          const SizedBox(height: 28),
+                          _buildShelfSection(
+                            context: context,
+                            title: 'Finished Books',
+                            books: readBooks,
+                            shelfStatus: ShelfStatus.read,
+                            icon: Icons.library_add_check_rounded,
+                            isReadingShelf: false,
+                            showRatings: true,
+                            searchQuery: searchQuery,
+                          ),
+
+                          // USER CUSTOM CREATED BOOKSHELVES
+                          if (customShelves.isNotEmpty) ...[
+                            const SizedBox(height: 32),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.folder_special_rounded,
+                                  color: theme.colorScheme.primary,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'My Custom Bookshelves',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            ...customShelves.map((shelfName) {
+                              final customBooks = _filterCustomBooks(
+                                allBooks,
+                                shelfName,
+                                searchQuery,
+                              );
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 28.0),
+                                child: _buildCustomShelfSection(
+                                  context: context,
+                                  shelfName: shelfName,
+                                  books: customBooks,
+                                  searchQuery: searchQuery,
+                                ),
+                              );
+                            }).toList(),
+                          ],
+
+                          const SizedBox(height: 20),
+
+                          // CREATE NEW BOOKSHELF BUTTON (Positioned at the bottom of the page)
+                          Center(
+                            child: OutlinedButton.icon(
+                              onPressed: _openCreateBookshelfDialog,
+                              icon: const Icon(Icons.add_rounded),
+                              label: const Text('Create New Bookshelf'),
+                              style: OutlinedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 48),
+                                foregroundColor: theme.colorScheme.primary,
+                                side: BorderSide(
+                                  color: theme.colorScheme.primary.withOpacity(
+                                    0.4,
+                                  ),
+                                  width: 1.5,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 24),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          );
-        },
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -456,7 +569,9 @@ class _HomeScreenState extends State<HomeScreen> {
     bool showRatings = false,
   }) {
     final theme = Theme.of(context);
-    final double shelfHeight = isReadingShelf ? 315.0 : (showRatings ? 272.0 : 256.0);
+    final double shelfHeight = isReadingShelf
+        ? 315.0
+        : (showRatings ? 272.0 : 256.0);
 
     final int maxLimit = 5;
     final displayBooks = books.take(maxLimit).toList();
@@ -473,34 +588,37 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(icon, color: theme.colorScheme.primary, size: 22),
-                    const SizedBox(width: 8),
-                    Text(
-                      title,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        books.length.toString(),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.primary,
+                Icon(icon, color: theme.colorScheme.primary, size: 22),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          title,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleLarge,
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          books.length.toString(),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-
+                const SizedBox(width: 8),
                 Row(
                   children: [
                     Text(
@@ -546,7 +664,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: theme.colorScheme.primary.withOpacity(0.08),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: theme.colorScheme.primary.withOpacity(0.25),
+                              color: theme.colorScheme.primary.withOpacity(
+                                0.25,
+                              ),
                               width: 1.5,
                             ),
                           ),
@@ -577,7 +697,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 '(${books.length} Books)',
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.primary.withOpacity(0.8),
+                                  color: theme.colorScheme.primary.withOpacity(
+                                    0.8,
+                                  ),
                                   fontSize: 11,
                                 ),
                               ),
@@ -592,7 +714,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 final book = displayBooks[index];
                 final totalPages = book.pageCount ?? 0;
                 final currentPgs = book.currentPage;
-                final progress = totalPages > 0 ? (currentPgs / totalPages).clamp(0.0, 1.0) : 0.0;
+                final progress = totalPages > 0
+                    ? (currentPgs / totalPages).clamp(0.0, 1.0)
+                    : 0.0;
                 final percent = (progress * 100).toInt();
 
                 return GestureDetector(
@@ -606,53 +730,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         AspectRatio(
                           aspectRatio: 1 / 1.48,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.12),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Stack(
-                                children: [
-                                  book.thumbnailUrl.isNotEmpty
-                                      ? Image.network(
-                                          book.thumbnailUrl,
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                          height: double.infinity,
-                                          errorBuilder: (context, error, stackTrace) => Container(
-                                            color: const Color(0xFF2F3E46),
-                                            child: const Center(
-                                              child: Icon(Icons.book, size: 40, color: Colors.white54),
-                                            ),
-                                          ),
-                                        )
-                                      : Container(
-                                          color: const Color(0xFF2F3E46),
-                                          child: const Center(
-                                            child: Icon(Icons.book, size: 40, color: Colors.white54),
-                                          ),
-                                        ),
-                                  Positioned(
-                                    left: 0, top: 0, bottom: 0, width: 6,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [Colors.black.withOpacity(0.35), Colors.transparent],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          child: NatureBookCover(
+                            imageUrl: book.thumbnailUrl,
+                            title: book.title,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -681,8 +761,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(4),
                             child: LinearProgressIndicator(
                               value: progress,
-                              backgroundColor: theme.colorScheme.primary.withOpacity(0.12),
-                              valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                              backgroundColor: theme.colorScheme.primary
+                                  .withOpacity(0.12),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                theme.colorScheme.primary,
+                              ),
                               minHeight: 5,
                             ),
                           ),
@@ -699,7 +782,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               Text(
-                                totalPages > 0 ? '$currentPgs/$totalPages' : 'pg $currentPgs',
+                                totalPages > 0
+                                    ? '$currentPgs/$totalPages'
+                                    : 'pg $currentPgs',
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   fontSize: 10,
                                   color: Colors.grey[600],
@@ -712,7 +797,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
+                              const Icon(
+                                Icons.star_rounded,
+                                color: Colors.amber,
+                                size: 14,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 book.userRating.toStringAsFixed(1),
@@ -755,11 +844,19 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             InkWell(
-              onTap: () => _openFullShowcase(ShelfStatus.none, shelfName, customShelfName: shelfName),
+              onTap: () => _openFullShowcase(
+                ShelfStatus.none,
+                shelfName,
+                customShelfName: shelfName,
+              ),
               borderRadius: BorderRadius.circular(8),
               child: Row(
                 children: [
-                  Icon(Icons.folder_special_rounded, color: theme.colorScheme.primary, size: 22),
+                  Icon(
+                    Icons.folder_special_rounded,
+                    color: theme.colorScheme.primary,
+                    size: 22,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     shelfName,
@@ -769,7 +866,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primary.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(10),
@@ -795,7 +895,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () => _confirmDeleteCustomShelf(shelfName),
                 ),
                 InkWell(
-                  onTap: () => _openFullShowcase(ShelfStatus.none, shelfName, customShelfName: shelfName),
+                  onTap: () => _openFullShowcase(
+                    ShelfStatus.none,
+                    shelfName,
+                    customShelfName: shelfName,
+                  ),
                   child: Row(
                     children: [
                       Text(
@@ -848,7 +952,11 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (context, index) {
                 if (index == displayBooks.length) {
                   return GestureDetector(
-                    onTap: () => _openFullShowcase(ShelfStatus.none, shelfName, customShelfName: shelfName),
+                    onTap: () => _openFullShowcase(
+                      ShelfStatus.none,
+                      shelfName,
+                      customShelfName: shelfName,
+                    ),
                     child: Container(
                       width: 130,
                       margin: const EdgeInsets.only(right: 16),
@@ -859,7 +967,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: theme.colorScheme.primary.withOpacity(0.08),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: theme.colorScheme.primary.withOpacity(0.25),
+                              color: theme.colorScheme.primary.withOpacity(
+                                0.25,
+                              ),
                               width: 1.5,
                             ),
                           ),
@@ -890,7 +1000,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 '(${books.length} Books)',
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.primary.withOpacity(0.8),
+                                  color: theme.colorScheme.primary.withOpacity(
+                                    0.8,
+                                  ),
                                   fontSize: 11,
                                 ),
                               ),
@@ -936,25 +1048,43 @@ class _HomeScreenState extends State<HomeScreen> {
                                           fit: BoxFit.cover,
                                           width: double.infinity,
                                           height: double.infinity,
-                                          errorBuilder: (context, error, stackTrace) => Container(
-                                            color: const Color(0xFF2F3E46),
-                                            child: const Center(
-                                              child: Icon(Icons.book, size: 40, color: Colors.white54),
-                                            ),
-                                          ),
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Container(
+                                                    color: theme
+                                                        .colorScheme
+                                                        .primary,
+                                                    child: const Center(
+                                                      child: Icon(
+                                                        Icons.book,
+                                                        size: 40,
+                                                        color: Colors.white54,
+                                                      ),
+                                                    ),
+                                                  ),
                                         )
                                       : Container(
-                                          color: const Color(0xFF2F3E46),
+                                          color: theme.colorScheme.primary,
                                           child: const Center(
-                                            child: Icon(Icons.book, size: 40, color: Colors.white54),
+                                            child: Icon(
+                                              Icons.book,
+                                              size: 40,
+                                              color: Colors.white54,
+                                            ),
                                           ),
                                         ),
                                   Positioned(
-                                    left: 0, top: 0, bottom: 0, width: 6,
+                                    left: 0,
+                                    top: 0,
+                                    bottom: 0,
+                                    width: 6,
                                     child: Container(
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
-                                          colors: [Colors.black.withOpacity(0.35), Colors.transparent],
+                                          colors: [
+                                            Colors.black.withOpacity(0.35),
+                                            Colors.transparent,
+                                          ],
                                         ),
                                       ),
                                     ),
@@ -996,24 +1126,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildEmptyShelfPlaceholder(BuildContext context, String searchQuery) {
-    final theme = Theme.of(context);
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Center(
-        child: Text(
-          searchQuery.isNotEmpty ? 'No books matching "$searchQuery"' : 'No books in this shelf yet.',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: Colors.grey[500],
-            fontStyle: FontStyle.italic,
-          ),
-        ),
-      ),
+    return NatureEmptyState(
+      icon: searchQuery.isNotEmpty
+          ? Icons.search_off_rounded
+          : Icons.local_florist_rounded,
+      title: searchQuery.isNotEmpty
+          ? 'No matching books'
+          : 'This shelf is ready to grow',
+      message: searchQuery.isNotEmpty
+          ? 'No books match "$searchQuery" in this shelf.'
+          : 'Add a book from search to begin this collection.',
     );
   }
 

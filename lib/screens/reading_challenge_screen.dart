@@ -4,6 +4,8 @@ import '../models/book.dart';
 import '../services/google_books_service.dart';
 import '../services/firebase_service.dart';
 import 'book_detail_screen.dart';
+import '../widgets/nature_ui.dart';
+import '../theme/theme.dart';
 
 class ReadingChallengeScreen extends StatefulWidget {
   final FirebaseService firebaseService;
@@ -40,7 +42,9 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
               decoration: InputDecoration(
                 labelText: 'Target Books',
                 suffixText: 'books',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ],
@@ -52,7 +56,8 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              final newGoal = int.tryParse(controller.text.trim()) ?? currentGoal;
+              final newGoal =
+                  int.tryParse(controller.text.trim()) ?? currentGoal;
               if (newGoal > 0) {
                 widget.firebaseService.saveReadingGoal(newGoal);
               }
@@ -92,36 +97,36 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
         title: const Text('2026 Reading Challenge'),
         centerTitle: true,
       ),
-      body: StreamBuilder<List<Book>>(
-        stream: widget.firebaseService.getBookShelfStream(),
-        builder: (context, bookSnapshot) {
-          final books = bookSnapshot.data ?? [];
-          final finishedBooks = books.where((b) => b.shelf == ShelfStatus.read).toList();
+      body: NatureBackdrop(
+        child: StreamBuilder<List<Book>>(
+          stream: widget.firebaseService.getBookShelfStream(),
+          builder: (context, bookSnapshot) {
+            final books = bookSnapshot.data ?? [];
+            final finishedBooks = books
+                .where((b) => b.shelf == ShelfStatus.read)
+                .toList();
 
-          return StreamBuilder<int>(
-            stream: widget.firebaseService.getReadingGoalStream(),
-            builder: (context, goalSnapshot) {
-              final goal = goalSnapshot.data ?? 12;
-              final completedCount = finishedBooks.length;
-              final progress = goal > 0 ? (completedCount / goal).clamp(0.0, 1.0) : 0.0;
-              final percent = (progress * 100).toInt();
-              final booksLeft = (goal - completedCount).clamp(0, 999);
+            return StreamBuilder<int>(
+              stream: widget.firebaseService.getReadingGoalStream(),
+              builder: (context, goalSnapshot) {
+                final goal = goalSnapshot.data ?? 12;
+                final completedCount = finishedBooks.length;
+                final progress = goal > 0
+                    ? (completedCount / goal).clamp(0.0, 1.0)
+                    : 0.0;
+                final percent = (progress * 100).toInt();
+                final booksLeft = (goal - completedCount).clamp(0, 999);
 
-              return SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Main Challenge Progress Card
-                    Card(
-                      elevation: 0,
-                      color: theme.colorScheme.primary.withOpacity(0.06),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        side: BorderSide(color: theme.colorScheme.primary.withOpacity(0.15)),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Main Challenge Progress Card
+                      NatureHeroCard(
+                        startColor: BookeryTheme.forestDeep,
+                        endColor: BookeryTheme.oceanBlueColor,
+                        padding: const EdgeInsets.all(24),
                         child: Column(
                           children: [
                             Row(
@@ -129,21 +134,29 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.emoji_events_rounded, color: Colors.amber[700], size: 28),
+                                    const Icon(
+                                      Icons.emoji_events_rounded,
+                                      color: BookeryTheme.accentGoldColor,
+                                      size: 28,
+                                    ),
                                     const SizedBox(width: 8),
                                     Text(
                                       'ANNUAL GOAL',
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.2,
-                                        color: theme.colorScheme.primary,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1.2,
+                                            color: BookeryTheme.skyColor,
+                                          ),
                                     ),
                                   ],
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.edit_outlined, size: 20),
-                                  color: theme.colorScheme.primary,
+                                  icon: const Icon(
+                                    Icons.edit_outlined,
+                                    size: 20,
+                                  ),
+                                  color: Colors.white,
                                   tooltip: 'Adjust Goal',
                                   onPressed: () => _openSetGoalDialog(goal),
                                 ),
@@ -161,22 +174,32 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                                   child: CircularProgressIndicator(
                                     value: progress,
                                     strokeWidth: 12,
-                                    backgroundColor: theme.colorScheme.primary.withOpacity(0.12),
-                                    valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                                    backgroundColor: Colors.white.withValues(
+                                      alpha: 0.18,
+                                    ),
+                                    valueColor:
+                                        const AlwaysStoppedAnimation<Color>(
+                                          BookeryTheme.accentGoldColor,
+                                        ),
                                   ),
                                 ),
                                 Column(
                                   children: [
                                     Text(
                                       '$completedCount / $goal',
-                                      style: theme.textTheme.headlineMedium?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: theme.colorScheme.primary,
-                                      ),
+                                      style: theme.textTheme.headlineMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
                                     ),
                                     Text(
                                       'Books Read',
-                                      style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: BookeryTheme.skyColor,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -190,194 +213,238 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                                   : '$booksLeft more ${booksLeft == 1 ? "book" : "books"} to reach your goal ($percent% completed)',
                               textAlign: TextAlign.center,
                               style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
                             ),
                           ],
                         ),
+                      ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
+
+                      const SizedBox(height: 28),
+
+                      // Milestone Badges Section
+                      Text(
+                        'Milestones & Badges',
+                        style: theme.textTheme.titleLarge,
                       ),
-                    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
-
-                    const SizedBox(height: 28),
-
-                    // Milestone Badges Section
-                    Text(
-                      'Milestones & Badges',
-                      style: theme.textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 14),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildBadgeChip(
-                          icon: Icons.menu_book_rounded,
-                          title: 'First Step',
-                          subtitle: '1 Book',
-                          isUnlocked: completedCount >= 1,
-                        ),
-                        _buildBadgeChip(
-                          icon: Icons.auto_stories_rounded,
-                          title: 'Avid Reader',
-                          subtitle: '5 Books',
-                          isUnlocked: completedCount >= 5,
-                        ),
-                        _buildBadgeChip(
-                          icon: Icons.workspace_premium_rounded,
-                          title: 'Champion',
-                          subtitle: '$goal Goal',
-                          isUnlocked: completedCount >= goal,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Finished Books Grid
-                    Text(
-                      'Finished Books for Challenge ($completedCount)',
-                      style: theme.textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 14),
-
-                    if (finishedBooks.isEmpty) ...[
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey[200]!),
-                        ),
-                        child: Column(
-                          children: [
-                            Icon(Icons.library_books_rounded, size: 40, color: Colors.grey[300]),
-                            const SizedBox(height: 10),
-                            const Text(
-                              'No finished books logged yet.',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              'Mark books as "Finished" in your bookshelf to count towards your challenge!',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 12, color: Colors.grey),
-                            ),
-                          ],
-                        ),
+                      const SizedBox(height: 14),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildBadgeChip(
+                            icon: Icons.menu_book_rounded,
+                            title: 'First Step',
+                            subtitle: '1 Book',
+                            isUnlocked: completedCount >= 1,
+                          ),
+                          _buildBadgeChip(
+                            icon: Icons.auto_stories_rounded,
+                            title: 'Avid Reader',
+                            subtitle: '5 Books',
+                            isUnlocked: completedCount >= 5,
+                          ),
+                          _buildBadgeChip(
+                            icon: Icons.workspace_premium_rounded,
+                            title: 'Champion',
+                            subtitle: '$goal Goal',
+                            isUnlocked: completedCount >= goal,
+                          ),
+                        ],
                       ),
-                    ] else ...[
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: 0.44,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 18,
+                      const SizedBox(height: 32),
+
+                      // Finished Books Grid
+                      Text(
+                        'Finished Books for Challenge ($completedCount)',
+                        style: theme.textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 14),
+
+                      if (finishedBooks.isEmpty) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 36,
+                            horizontal: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.grey[200]!),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.library_books_rounded,
+                                size: 40,
+                                color: Colors.grey[300],
+                              ),
+                              const SizedBox(height: 10),
+                              const Text(
+                                'No finished books logged yet.',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                'Mark books as "Finished" in your bookshelf to count towards your challenge!',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        itemCount: finishedBooks.length,
-                        itemBuilder: (context, index) {
-                          final book = finishedBooks[index];
-                          return GestureDetector(
-                            onTap: () => _openBookDetail(book),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                AspectRatio(
-                                  aspectRatio: 1 / 1.48,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.12),
-                                          blurRadius: 6,
-                                          offset: const Offset(0, 3),
-                                        ),
-                                      ],
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Stack(
-                                        children: [
-                                          book.thumbnailUrl.isNotEmpty
-                                              ? Image.network(
-                                                  book.thumbnailUrl,
-                                                  fit: BoxFit.cover,
-                                                  width: double.infinity,
-                                                  height: double.infinity,
-                                                  errorBuilder: (context, error, stackTrace) => Container(
-                                                    color: const Color(0xFF2F3E46),
-                                                    child: const Center(
-                                                      child: Icon(Icons.book, size: 36, color: Colors.white54),
-                                                    ),
-                                                  ),
-                                                )
-                                              : Container(color: const Color(0xFF2F3E46)),
-                                          Positioned(
-                                            left: 0, top: 0, bottom: 0, width: 5,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  colors: [Colors.black.withOpacity(0.35), Colors.transparent],
-                                                ),
-                                              ),
+                      ] else ...[
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                childAspectRatio: 0.44,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 18,
+                              ),
+                          itemCount: finishedBooks.length,
+                          itemBuilder: (context, index) {
+                            final book = finishedBooks[index];
+                            return GestureDetector(
+                              onTap: () => _openBookDetail(book),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  AspectRatio(
+                                    aspectRatio: 1 / 1.48,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.12,
                                             ),
+                                            blurRadius: 6,
+                                            offset: const Offset(0, 3),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  book.title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.titleSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  book.authors.join(', '),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: Colors.grey[600],
-                                    fontSize: 10,
-                                  ),
-                                ),
-                                const SizedBox(height: 3),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.star_rounded, color: Colors.amber, size: 13),
-                                    const SizedBox(width: 3),
-                                    Text(
-                                      book.userRating > 0
-                                          ? book.userRating.toStringAsFixed(1)
-                                          : (book.averageRating != null && book.averageRating! > 0
-                                              ? book.averageRating!.toStringAsFixed(1)
-                                              : 'Unrated'),
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 10.5,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Stack(
+                                          children: [
+                                            book.thumbnailUrl.isNotEmpty
+                                                ? Image.network(
+                                                    book.thumbnailUrl,
+                                                    fit: BoxFit.cover,
+                                                    width: double.infinity,
+                                                    height: double.infinity,
+                                                    errorBuilder:
+                                                        (
+                                                          context,
+                                                          error,
+                                                          stackTrace,
+                                                        ) => Container(
+                                                          color: theme
+                                                              .colorScheme
+                                                              .primary,
+                                                          child: const Center(
+                                                            child: Icon(
+                                                              Icons.book,
+                                                              size: 36,
+                                                              color: Colors
+                                                                  .white54,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                  )
+                                                : Container(
+                                                    color: theme
+                                                        .colorScheme
+                                                        .primary,
+                                                  ),
+                                            Positioned(
+                                              left: 0,
+                                              top: 0,
+                                              bottom: 0,
+                                              width: 5,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    colors: [
+                                                      Colors.black.withOpacity(
+                                                        0.35,
+                                                      ),
+                                                      Colors.transparent,
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    book.title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    book.authors.join(', '),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: Colors.grey[600],
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.star_rounded,
+                                        color: Colors.amber,
+                                        size: 13,
+                                      ),
+                                      const SizedBox(width: 3),
+                                      Text(
+                                        book.userRating > 0
+                                            ? book.userRating.toStringAsFixed(1)
+                                            : (book.averageRating != null &&
+                                                      book.averageRating! > 0
+                                                  ? book.averageRating!
+                                                        .toStringAsFixed(1)
+                                                  : 'Unrated'),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 10.5,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ],
-                  ],
-                ),
-              );
-            },
-          );
-        },
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -393,10 +460,14 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
       width: 100,
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       decoration: BoxDecoration(
-        color: isUnlocked ? theme.colorScheme.primary.withOpacity(0.1) : Colors.grey[100],
+        color: isUnlocked
+            ? theme.colorScheme.primary.withOpacity(0.1)
+            : Colors.grey[100],
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isUnlocked ? theme.colorScheme.primary.withOpacity(0.3) : Colors.grey[300]!,
+          color: isUnlocked
+              ? theme.colorScheme.primary.withOpacity(0.3)
+              : Colors.grey[300]!,
         ),
       ),
       child: Column(
@@ -422,7 +493,9 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
             subtitle,
             style: TextStyle(
               fontSize: 10,
-              color: isUnlocked ? theme.colorScheme.primary.withOpacity(0.8) : Colors.grey[500],
+              color: isUnlocked
+                  ? theme.colorScheme.primary.withOpacity(0.8)
+                  : Colors.grey[500],
             ),
           ),
         ],

@@ -5,6 +5,7 @@ import '../screens/profile_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/reading_challenge_screen.dart';
 import '../screens/search_screen.dart';
+import '../theme/theme.dart';
 
 void showProfileMenuSheet({
   required BuildContext context,
@@ -21,10 +22,10 @@ void showProfileMenuSheet({
     builder: (context) {
       return Container(
         decoration: BoxDecoration(
-          color: theme.colorScheme.background,
+          color: theme.colorScheme.surface,
           borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(28),
-            topRight: Radius.circular(28),
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
           ),
           boxShadow: [
             BoxShadow(
@@ -53,9 +54,14 @@ void showProfileMenuSheet({
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: theme.colorScheme.primary.withOpacity(0.15), width: 1.2),
+                gradient: const LinearGradient(
+                  colors: [BookeryTheme.forestDeep, BookeryTheme.primaryColor],
+                ),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: theme.colorScheme.primary.withOpacity(0.15),
+                  width: 1.2,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.03),
@@ -68,8 +74,12 @@ void showProfileMenuSheet({
                 children: [
                   CircleAvatar(
                     radius: 26,
-                    backgroundColor: theme.colorScheme.primary.withOpacity(0.12),
-                    child: Icon(Icons.person_rounded, size: 30, color: theme.colorScheme.primary),
+                    backgroundColor: Colors.white.withValues(alpha: 0.14),
+                    child: const Icon(
+                      Icons.menu_book_rounded,
+                      size: 30,
+                      color: Colors.white,
+                    ),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -79,19 +89,23 @@ void showProfileMenuSheet({
                         Text(
                           'Bookery Reader',
                           style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                             fontSize: 17,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Row(
                           children: [
-                            Icon(Icons.stars_rounded, size: 15, color: Colors.amber[700]),
+                            const Icon(
+                              Icons.stars_rounded,
+                              size: 15,
+                              color: BookeryTheme.accentGoldColor,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               'Bibliophile • Level 4',
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.primary,
+                                color: BookeryTheme.skyColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
@@ -109,7 +123,8 @@ void showProfileMenuSheet({
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ProfileScreen(firebaseService: firebaseService),
+                          builder: (context) =>
+                              ProfileScreen(firebaseService: firebaseService),
                         ),
                       );
                     },
@@ -197,7 +212,8 @@ void showProfileMenuSheet({
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SettingsScreen(firebaseService: firebaseService),
+                    builder: (context) =>
+                        SettingsScreen(firebaseService: firebaseService),
                   ),
                 );
               },
@@ -225,18 +241,21 @@ Widget _buildProfileNavButton({
     padding: const EdgeInsets.only(bottom: 8.0),
     child: Card(
       elevation: 0,
-      color: Colors.white,
+      color: BookeryTheme.surfaceColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
         side: BorderSide(color: Colors.grey[200]!),
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
         child: ListTile(
           onTap: onTap,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 2,
+          ),
           leading: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
@@ -258,7 +277,11 @@ Widget _buildProfileNavButton({
               color: Colors.grey[600],
             ),
           ),
-          trailing: Icon(Icons.chevron_right_rounded, color: Colors.grey[400], size: 20),
+          trailing: Icon(
+            Icons.chevron_right_rounded,
+            color: Colors.grey[400],
+            size: 20,
+          ),
         ),
       ),
     ),

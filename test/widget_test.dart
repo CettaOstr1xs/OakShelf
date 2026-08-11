@@ -1,9 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
 import 'package:bookery/main.dart';
 import 'package:bookery/models/book.dart';
 import 'package:bookery/models/quote.dart';
 import 'package:bookery/services/google_books_service.dart';
 import 'package:bookery/services/firebase_service.dart';
+import 'package:bookery/screens/home_screen.dart';
+import 'package:bookery/theme/theme.dart';
 
 // Stub implementation of FirebaseService to bypass real native SDK checks during tests
 class MockFirebaseService implements FirebaseService {
@@ -48,18 +51,39 @@ class MockFirebaseService implements FirebaseService {
 }
 
 void main() {
-  testWidgets('App renders main navigation shell smoke test', (WidgetTester tester) async {
+  testWidgets('App renders main navigation shell smoke test', (
+    WidgetTester tester,
+  ) async {
     final mockFirebaseService = MockFirebaseService();
     final apiService = GoogleBooksService();
 
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp(
-      firebaseService: mockFirebaseService,
-      apiService: apiService,
-    ));
+    await tester.pumpWidget(
+      MyApp(firebaseService: mockFirebaseService, apiService: apiService),
+    );
     await tester.pumpAndSettle();
 
     // Verify that the Bookery shell renders correctly
-    expect(find.text('Bookery Feed'), findsOneWidget);
+    expect(find.text('Bookery'), findsOneWidget);
+  });
+
+  testWidgets('Library body renders with an empty mocked library', (
+    WidgetTester tester,
+  ) async {
+    final mockFirebaseService = MockFirebaseService();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: BookeryTheme.lightTheme,
+        home: HomeScreen(
+          firebaseService: mockFirebaseService,
+          apiService: GoogleBooksService(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Your reading garden'), findsOneWidget);
+    expect(find.text('This shelf is ready to grow'), findsWidgets);
   });
 }

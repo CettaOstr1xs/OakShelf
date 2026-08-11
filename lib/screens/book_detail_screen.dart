@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../models/quote.dart';
+import '../models/author.dart';
 import '../services/google_books_service.dart';
 import '../services/firebase_service.dart';
 import '../services/hardcover_service.dart';
+import '../services/author_service.dart';
 import '../widgets/interactive_book_cover_modal.dart';
+import '../widgets/nature_ui.dart';
 
 class BookDetailScreen extends StatefulWidget {
   final String bookId;
@@ -43,7 +46,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       _localBook = widget.initialBook;
       _isLoading = false;
       _reviewController.text = _localBook!.userReview;
-      _progressController.text = _localBook!.currentPage > 0 ? _localBook!.currentPage.toString() : '';
+      _progressController.text = _localBook!.currentPage > 0
+          ? _localBook!.currentPage.toString()
+          : '';
     }
 
     _loadBookDetails();
@@ -251,46 +256,48 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             ? const Center(child: Text('Book details could not be found.'))
             : GestureDetector(
                 onTap: () => FocusScope.of(context).unfocus(),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildBookIdentitySection(),
-                      const SizedBox(height: 24),
-                      _buildMetadataRow(),
-                      const SizedBox(height: 20),
-                      _buildSynopsisSection(),
-                      _buildGenresAndMoodsSection(),
-                      const Divider(height: 40, thickness: 1),
-                      _buildUserActivitySection(),
-                      const SizedBox(height: 32),
+                child: NatureBackdrop(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildBookIdentitySection(),
+                        const SizedBox(height: 24),
+                        _buildMetadataRow(),
+                        const SizedBox(height: 20),
+                        _buildSynopsisSection(),
+                        _buildGenresAndMoodsSection(),
+                        const Divider(height: 40, thickness: 1),
+                        _buildUserActivitySection(),
+                        const SizedBox(height: 32),
 
-                      // Save Button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _saveChanges,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: theme.colorScheme.primary,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                        // Save Button
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _saveChanges,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.colorScheme.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              elevation: 2,
                             ),
-                            elevation: 2,
-                          ),
-                          child: const Text(
-                            'Save Changes',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                            child: const Text(
+                              'Save Changes',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -317,30 +324,12 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           },
           child: Hero(
             tag: 'book_cover_${_localBook!.id}',
-            child: Container(
+            child: NatureBookCover(
+              imageUrl: _localBook!.thumbnailUrl,
+              title: _localBook!.title,
               width: 110,
               height: 160,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: _localBook!.thumbnailUrl.isNotEmpty
-                    ? Image.network(
-                        _localBook!.thumbnailUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            _buildFallbackCover(_localBook!.title),
-                      )
-                    : _buildFallbackCover(_localBook!.title),
-              ),
+              radius: 8,
             ),
           ),
         ),
@@ -358,11 +347,34 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                'By ${_localBook!.authors.join(", ")}',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.primary,
-                ),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  Text(
+                    'By ',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: theme.colorScheme.onBackground.withOpacity(0.8),
+                    ),
+                  ),
+                  ..._localBook!.authors.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final author = entry.value;
+                    final isLast = index == _localBook!.authors.length - 1;
+                    return InkWell(
+                      onTap: () => _showAuthorDetails(author),
+                      borderRadius: BorderRadius.circular(4),
+                      child: Text(
+                        '$author${isLast ? "" : ", "}',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: theme.colorScheme.primary,
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ],
               ),
               if (_localBook!.categories.isNotEmpty) ...[
                 const SizedBox(height: 12),
@@ -392,25 +404,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     );
   }
 
-  Widget _buildFallbackCover(String title) {
-    return Container(
-      color: Colors.grey[300],
-      alignment: Alignment.center,
-      padding: const EdgeInsets.all(12),
-      child: Text(
-        title,
-        maxLines: 4,
-        overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: Colors.black54,
-        ),
-      ),
-    );
-  }
-
   Widget _buildMetadataRow() {
     final theme = Theme.of(context);
     final year = _localBook!.publishedDate.isNotEmpty
@@ -433,7 +426,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             value: _localBook!.averageRating != null
                 ? _localBook!.averageRating!.toStringAsFixed(1)
                 : '—',
-            label: 'Google Rating',
+            label: 'Catalog Rating',
             icon: Icons.star_rounded,
             iconColor: Colors.amber[600]!,
           ),
@@ -535,12 +528,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     final theme = Theme.of(context);
 
     return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: theme.colorScheme.primary.withOpacity(0.15)),
-      ),
-      color: theme.colorScheme.primary.withOpacity(0.02),
+      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.34),
       child: Padding(
         padding: const EdgeInsets.all(18.0),
         child: Column(
@@ -585,38 +573,51 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('My Custom Shelves', style: theme.textTheme.titleSmall),
+                    Text(
+                      'My Custom Shelves',
+                      style: theme.textTheme.titleSmall,
+                    ),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
                       runSpacing: 6,
                       children: customShelves.map((shelfName) {
-                        final isSelected = _localBook!.customShelves.contains(shelfName);
+                        final isSelected = _localBook!.customShelves.contains(
+                          shelfName,
+                        );
                         return FilterChip(
                           label: Text(shelfName),
                           avatar: Icon(
                             Icons.folder_special_rounded,
                             size: 16,
-                            color: isSelected ? Colors.white : theme.colorScheme.primary,
+                            color: isSelected
+                                ? Colors.white
+                                : theme.colorScheme.primary,
                           ),
                           selected: isSelected,
                           selectedColor: theme.colorScheme.primary,
                           backgroundColor: Colors.white,
                           labelStyle: TextStyle(
-                            color: isSelected ? Colors.white : theme.colorScheme.onBackground,
+                            color: isSelected
+                                ? Colors.white
+                                : theme.colorScheme.onBackground,
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                             side: BorderSide(
-                              color: isSelected ? Colors.transparent : theme.colorScheme.primary.withOpacity(0.3),
+                              color: isSelected
+                                  ? Colors.transparent
+                                  : theme.colorScheme.primary.withOpacity(0.3),
                             ),
                           ),
                           onSelected: (selected) {
                             setState(() {
                               if (selected) {
-                                if (!_localBook!.customShelves.contains(shelfName)) {
+                                if (!_localBook!.customShelves.contains(
+                                  shelfName,
+                                )) {
                                   _localBook!.customShelves.add(shelfName);
                                 }
                               } else {
@@ -811,7 +812,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         GestureDetector(
           onTapDown: (details) => updateRatingFromDx(details.localPosition.dx),
           onPanStart: (details) => updateRatingFromDx(details.localPosition.dx),
-          onPanUpdate: (details) => updateRatingFromDx(details.localPosition.dx),
+          onPanUpdate: (details) =>
+              updateRatingFromDx(details.localPosition.dx),
           child: Container(
             color: Colors.transparent,
             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -843,7 +845,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         ),
         const SizedBox(height: 4),
         Text(
-          rating > 0 ? '${rating.toStringAsFixed(1)} Stars (Slide left/right to adjust)' : 'Slide left or right to rate',
+          rating > 0
+              ? '${rating.toStringAsFixed(1)} Stars (Slide left/right to adjust)'
+              : 'Slide left or right to rate',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.primary,
@@ -877,7 +881,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         const SizedBox(height: 20),
         Row(
           children: [
-            Icon(Icons.auto_awesome_rounded, color: theme.colorScheme.primary, size: 20),
+            Icon(
+              Icons.auto_awesome_rounded,
+              color: theme.colorScheme.primary,
+              size: 20,
+            ),
             const SizedBox(width: 8),
             Text('Genres & Moods', style: theme.textTheme.titleLarge),
           ],
@@ -900,11 +908,16 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             runSpacing: 6,
             children: tags.genres.map((genre) {
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primary.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: theme.colorScheme.primary.withOpacity(0.2)),
+                  border: Border.all(
+                    color: theme.colorScheme.primary.withOpacity(0.2),
+                  ),
                 ),
                 child: Text(
                   '#$genre',
@@ -935,7 +948,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             runSpacing: 6,
             children: tags.moods.map((mood) {
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
@@ -960,6 +976,423 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           ),
         ],
       ],
+    );
+  }
+
+  void _showAuthorDetails(String authorName) {
+    final theme = Theme.of(context);
+    final AuthorService authorService = AuthorService();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.75,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+              ),
+              child: FutureBuilder<Map<String, dynamic>>(
+                future: () async {
+                  Author? author;
+                  List<Book> books = [];
+                  try {
+                    author = await authorService.fetchAuthorInfo(authorName);
+                  } catch (e) {
+                    print('Error loading author bio: $e');
+                  }
+                  try {
+                    books = await widget.apiService.searchBooks(authorName);
+                  } catch (e) {
+                    print('Error loading author books: $e');
+                  }
+                  return {'author': author, 'books': books};
+                }(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 40.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+
+                  if (snapshot.hasError || snapshot.data == null) {
+                    return _buildAuthorErrorSheet(authorName);
+                  }
+
+                  final author = snapshot.data!['author'] as Author?;
+                  final books = snapshot.data!['books'] as List<Book>;
+
+                  if (author == null) {
+                    return _buildAuthorErrorSheet(authorName);
+                  }
+
+                  return Stack(
+                    children: [
+                      ListView(
+                        controller: scrollController,
+                        padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+                        children: [
+                          // Drag indicator bar
+                          Center(
+                            child: Container(
+                              width: 40,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Profile header row
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Author Avatar/Photo
+                              Container(
+                                width: 85,
+                                height: 85,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                  border: Border.all(
+                                    color: theme.colorScheme.primary
+                                        .withOpacity(0.2),
+                                    width: 3,
+                                  ),
+                                ),
+                                child: ClipOval(
+                                  child:
+                                      author.photoUrl != null &&
+                                          author.photoUrl!.isNotEmpty
+                                      ? Image.network(
+                                          author.photoUrl!,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  _buildFallbackAvatar(
+                                                    author.name,
+                                                  ),
+                                        )
+                                      : _buildFallbackAvatar(author.name),
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+
+                              // Name & Lifespan Details
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      author.name,
+                                      style: theme.textTheme.headlineSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    if (author.birthDate != null ||
+                                        author.deathDate != null)
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.calendar_today_rounded,
+                                            size: 14,
+                                            color: theme.colorScheme.primary
+                                                .withOpacity(0.7),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            '${author.birthDate ?? "Unknown"} — ${author.deathDate ?? "Present"}',
+                                            style: theme.textTheme.bodyMedium
+                                                ?.copyWith(
+                                                  color: theme
+                                                      .colorScheme
+                                                      .onSurface
+                                                      .withOpacity(0.7),
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    if (author.wikipediaUrl != null) ...[
+                                      const SizedBox(height: 8),
+                                      InkWell(
+                                        onTap: () {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Source: ${author.wikipediaUrl}',
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          'Wikipedia Biography ↗',
+                                          style: TextStyle(
+                                            color: theme.colorScheme.primary,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 28),
+
+                          // Biography Text
+                          Text(
+                            'Biography',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            author.bio,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              height: 1.5,
+                              color: theme.colorScheme.onSurface.withOpacity(
+                                0.85,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 28),
+
+                          // Horizontal scrollable Other Books Section
+                          if (books.isNotEmpty) ...[
+                            Text(
+                              'Other Books by ${author.name}',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+                            SizedBox(
+                              height: 180,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: books.length,
+                                itemBuilder: (context, index) {
+                                  final b = books[index];
+                                  if (b.id == widget.bookId)
+                                    return const SizedBox.shrink();
+
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.pop(context); // Close sheet
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              BookDetailScreen(
+                                                bookId: b.id,
+                                                initialBook: b,
+                                                firebaseService:
+                                                    widget.firebaseService,
+                                                apiService: widget.apiService,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      width: 100,
+                                      margin: const EdgeInsets.only(right: 14),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withOpacity(0.08),
+                                                    blurRadius: 4,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                child: b.thumbnailUrl.isNotEmpty
+                                                    ? Image.network(
+                                                        b.thumbnailUrl,
+                                                        fit: BoxFit.cover,
+                                                        width: double.infinity,
+                                                        errorBuilder:
+                                                            (
+                                                              context,
+                                                              err,
+                                                              stack,
+                                                            ) =>
+                                                                _buildFallbackCoverSmall(
+                                                                  b.title,
+                                                                ),
+                                                      )
+                                                    : _buildFallbackCoverSmall(
+                                                        b.title,
+                                                      ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            b.title,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: theme.textTheme.bodySmall
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 11,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      Positioned(
+                        right: 12,
+                        top: 12,
+                        child: IconButton(
+                          icon: const Icon(Icons.close_rounded),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildFallbackAvatar(String name) {
+    final initials = name.trim().isNotEmpty
+        ? name.trim().split(' ').map((s) => s[0]).take(2).join('').toUpperCase()
+        : 'A';
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF2D6A4F), Color(0xFF1E6091)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        initials,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFallbackCoverSmall(String title) {
+    return Container(
+      color: Colors.grey[200],
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(4),
+      child: Text(
+        title,
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 9,
+          fontWeight: FontWeight.bold,
+          color: Colors.black54,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAuthorErrorSheet(String authorName) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.person_off_rounded,
+                  size: 64,
+                  color: theme.colorScheme.primary.withOpacity(0.2),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'No details found for "$authorName"',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'We could not load biography info or dates for this author right now.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            child: IconButton(
+              icon: const Icon(Icons.close_rounded),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

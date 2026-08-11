@@ -28,7 +28,9 @@ class FirebaseService {
     try {
       User? user = _auth.currentUser;
       if (user == null) {
-        final credential = await _auth.signInAnonymously().timeout(const Duration(seconds: 4));
+        final credential = await _auth.signInAnonymously().timeout(
+          const Duration(seconds: 4),
+        );
         user = credential.user;
       }
       return user?.uid;
@@ -57,16 +59,26 @@ class FirebaseService {
     if (uid == null) {
       return Stream.value([]);
     }
-    
+
     return _db
         .collection('users')
         .doc(uid)
         .collection('books')
         .snapshots(includeMetadataChanges: true)
         .map((snapshot) {
-          return snapshot.docs
-              .map((doc) => Book.fromStorageJson(doc.data() as Map<String, dynamic>))
-              .toList();
+          final books = <Book>[];
+          for (final doc in snapshot.docs) {
+            try {
+              final data = doc.data();
+              if (data is Map<String, dynamic>) {
+                books.add(Book.fromStorageJson(data));
+              }
+            } catch (e) {
+              // Keep one malformed cached document from blanking the library.
+              print('Skipping malformed book ${doc.id}: $e');
+            }
+          }
+          return books;
         });
   }
 
@@ -74,14 +86,16 @@ class FirebaseService {
   Future<Book?> getBook(String bookId) async {
     try {
       final sanitizedId = _sanitizeId(bookId);
-      
+
       try {
         final doc = await _userBooksRef.doc(sanitizedId).get();
         if (doc.exists && doc.data() != null) {
           return Book.fromStorageJson(doc.data() as Map<String, dynamic>);
         }
       } catch (_) {
-        final docCache = await _userBooksRef.doc(sanitizedId).get(const GetOptions(source: Source.cache));
+        final docCache = await _userBooksRef
+            .doc(sanitizedId)
+            .get(const GetOptions(source: Source.cache));
         if (docCache.exists && docCache.data() != null) {
           return Book.fromStorageJson(docCache.data() as Map<String, dynamic>);
         }
@@ -108,7 +122,9 @@ class FirebaseService {
           book.currentPage == 0) {
         await _userBooksRef.doc(docId).delete();
       } else {
-        await _userBooksRef.doc(docId).set(book.toStorageJson(), SetOptions(merge: true));
+        await _userBooksRef
+            .doc(docId)
+            .set(book.toStorageJson(), SetOptions(merge: true));
       }
     } catch (e) {
       print('Error saving book offline/online: $e');
@@ -129,7 +145,10 @@ class FirebaseService {
         .snapshots(includeMetadataChanges: true)
         .map((snapshot) {
           final List<Quote> list = snapshot.docs
-              .map((doc) => Quote.fromMap(doc.id, doc.data() as Map<String, dynamic>))
+              .map(
+                (doc) =>
+                    Quote.fromMap(doc.id, doc.data() as Map<String, dynamic>),
+              )
               .toList();
           list.sort((a, b) => b.dateAdded.compareTo(a.dateAdded));
           return list;
@@ -227,10 +246,11 @@ class FirebaseService {
         .collection('settings')
         .doc('custom_shelves')
         .set({
-      'shelves': FieldValue.arrayUnion([trimmedName]),
-    }, SetOptions(merge: true)).catchError((e) {
-      print('Error creating custom shelf: $e');
-    });
+          'shelves': FieldValue.arrayUnion([trimmedName]),
+        }, SetOptions(merge: true))
+        .catchError((e) {
+          print('Error creating custom shelf: $e');
+        });
   }
 
   // Delete a custom bookshelf by name (Instant non-blocking local + cloud cleanup)
@@ -245,10 +265,11 @@ class FirebaseService {
         .collection('settings')
         .doc('custom_shelves')
         .set({
-      'shelves': FieldValue.arrayRemove([name]),
-    }, SetOptions(merge: true)).catchError((e) {
-      print('Error deleting custom shelf: $e');
-    });
+          'shelves': FieldValue.arrayRemove([name]),
+        }, SetOptions(merge: true))
+        .catchError((e) {
+          print('Error deleting custom shelf: $e');
+        });
 
     // Clean up custom shelf assignment from books
     try {

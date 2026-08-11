@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import '../models/book.dart';
-import '../services/google_books_service.dart';
 import '../services/firebase_service.dart';
+import '../services/google_books_service.dart';
+import '../theme/theme.dart';
+import '../widgets/nature_ui.dart';
 import 'book_detail_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -24,15 +29,17 @@ class _SearchScreenState extends State<SearchScreen> {
   Map<String, Book> _savedBooksMap = {};
   bool _isLoading = false;
   bool _hasSearched = false;
-  bool _anyChanges = false;
-  
-  // To cancel subscription
-  dynamic _subscription;
+  StreamSubscription<List<Book>>? _subscription;
 
   @override
   void initState() {
     super.initState();
-    _listenToSavedBooks();
+    _subscription = widget.firebaseService.getBookShelfStream().listen((books) {
+      if (!mounted) return;
+      setState(() {
+        _savedBooksMap = {for (final book in books) book.id: book};
+      });
+    });
   }
 
   @override
@@ -40,17 +47,6 @@ class _SearchScreenState extends State<SearchScreen> {
     _subscription?.cancel();
     _searchController.dispose();
     super.dispose();
-  }
-
-  // Listen to Firestore real-time library changes to update badging
-  void _listenToSavedBooks() {
-    _subscription = widget.firebaseService.getBookShelfStream().listen((list) {
-      if (mounted) {
-        setState(() {
-          _savedBooksMap = {for (var book in list) book.id: book};
-        });
-      }
-    });
   }
 
   Future<void> _performSearch() async {
@@ -64,18 +60,24 @@ class _SearchScreenState extends State<SearchScreen> {
 
     try {
       final results = await widget.apiService.searchBooks(query);
-      setState(() {
-        _searchResults = results;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error searching books: $e')),
-      );
+      if (!mounted) return;
+      setState(() => _searchResults = results);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not search books: $error')));
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() {
+      _searchResults = [];
+      _hasSearched = false;
+    });
   }
 
   @override
@@ -83,126 +85,118 @@ class _SearchScreenState extends State<SearchScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Search Directory'),
-      ),
-      body: Column(
-        children: [
-          // Search Input Box
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
+      appBar: AppBar(title: const Text('Discover Books')),
+      body: NatureBackdrop(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: NatureHeroCard(
+                startColor: BookeryTheme.oceanBlueColor,
+                endColor: BookeryTheme.primaryColor,
+                padding: const EdgeInsets.fromLTRB(18, 17, 18, 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Find your next escape',
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      'Search the catalog by title, author, or genre.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: BookeryTheme.skyColor,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            textInputAction: TextInputAction.search,
+                            onSubmitted: (_) => _performSearch(),
+                            onChanged: (_) => setState(() {}),
+                            decoration: InputDecoration(
+                              hintText: 'Search books...',
+                              prefixIcon: const Icon(Icons.search_rounded),
+                              suffixIcon: _searchController.text.isNotEmpty
+                                  ? IconButton(
+                                      icon: const Icon(
+                                        Icons.close_rounded,
+                                        size: 20,
+                                      ),
+                                      onPressed: _clearSearch,
+                                    )
+                                  : null,
+                              fillColor: BookeryTheme.surfaceColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        ElevatedButton(
+                          onPressed: _isLoading ? null : _performSearch,
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(52, 52),
+                            padding: EdgeInsets.zero,
+                            backgroundColor: BookeryTheme.accentGoldColor,
+                            foregroundColor: BookeryTheme.textDarkColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Icon(Icons.arrow_forward_rounded),
                         ),
                       ],
                     ),
-                    child: TextField(
-                      controller: _searchController,
-                      style: theme.textTheme.bodyLarge,
-                      textInputAction: TextInputAction.search,
-                      onSubmitted: (_) => _performSearch(),
-                      decoration: InputDecoration(
-                        hintText: 'Search by title, author, genre...',
-                        prefixIcon: Icon(Icons.search, color: theme.colorScheme.primary),
-                        suffixIcon: _searchController.text.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear, size: 20),
-                                onPressed: () {
-                                  _searchController.clear();
-                                  setState(() {
-                                    _searchResults = [];
-                                    _hasSearched = false;
-                                  });
-                                },
-                              )
-                            : null,
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                      ),
-                      onChanged: (text) {
-                        setState(() {});
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _searchResults.isEmpty
+                  ? _buildPlaceholder()
+                  : ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                      itemCount: _searchResults.length,
+                      itemBuilder: (context, index) {
+                        final book = _searchResults[index];
+                        return _buildSearchResultCard(
+                          book,
+                          _savedBooksMap[book.id],
+                        );
                       },
                     ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: _performSearch,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.all(16),
-                    shape: const CircleBorder(),
-                    elevation: 2,
-                  ),
-                  child: const Icon(Icons.arrow_forward),
-                ),
-              ],
             ),
-          ),
-
-          // Search Results
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _searchResults.isEmpty
-                    ? _buildPlaceholder()
-                    : ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: _searchResults.length,
-                        itemBuilder: (context, index) {
-                          final book = _searchResults[index];
-                          final savedBook = _savedBooksMap[book.id];
-                          return _buildSearchResultCard(book, savedBook);
-                        },
-                      ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildPlaceholder() {
-    final theme = Theme.of(context);
     return Center(
       child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                _hasSearched ? Icons.search_off : Icons.library_books_rounded,
-                size: 72,
-                color: theme.colorScheme.primary.withOpacity(0.15),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _hasSearched ? 'No books found' : 'Find your next favorite book',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _hasSearched
-                    ? 'Try adjusting your keywords or checking spelling.'
-                    : 'Search Google Books database to add items to your library, rate, and review.',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium,
-              ),
-            ],
-          ),
+        padding: const EdgeInsets.all(16),
+        child: NatureEmptyState(
+          icon: _hasSearched ? Icons.search_off_rounded : Icons.sailing_rounded,
+          title: _hasSearched ? 'No books found' : 'Set sail for a new story',
+          message: _hasSearched
+              ? 'Try a different title, author, or broader keyword.'
+              : 'Explore the catalog, then save discoveries to your reading garden.',
         ),
       ),
     );
@@ -213,140 +207,87 @@ class _SearchScreenState extends State<SearchScreen> {
     final shelf = savedBook?.shelf ?? ShelfStatus.none;
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 14),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey[200]!),
-      ),
+      margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
-        onTap: () => _openBookDetail(book.id),
-        borderRadius: BorderRadius.circular(16),
+        onTap: () => _openBookDetail(book),
+        borderRadius: BorderRadius.circular(8),
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Cover thumbnail
-              Container(
+              NatureBookCover(
+                imageUrl: book.thumbnailUrl,
+                title: book.title,
                 width: 70,
-                height: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: book.thumbnailUrl.isNotEmpty
-                      ? Image.network(
-                          book.thumbnailUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              _buildFallbackCover(book.title),
-                        )
-                      : _buildFallbackCover(book.title),
-                ),
+                height: 104,
+                radius: 8,
               ),
               const SizedBox(width: 14),
-
-              // Book Details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title
                     Text(
                       book.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: theme.textTheme.titleMedium,
                     ),
                     const SizedBox(height: 4),
-
-                    // Author
                     Text(
                       book.authors.join(', '),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontSize: 13,
-                      ),
+                      style: theme.textTheme.bodySmall,
                     ),
-                    const SizedBox(height: 6),
-
-                    // Rating & Release date
+                    const SizedBox(height: 9),
                     Row(
                       children: [
                         if (book.averageRating != null) ...[
-                          Icon(Icons.star, color: Colors.amber[600], size: 16),
-                          const SizedBox(width: 4),
+                          const Icon(
+                            Icons.star_rounded,
+                            color: BookeryTheme.accentGoldColor,
+                            size: 17,
+                          ),
+                          const SizedBox(width: 3),
                           Text(
                             book.averageRating!.toStringAsFixed(1),
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: theme.textTheme.labelMedium,
                           ),
                           const SizedBox(width: 12),
                         ],
+                        Icon(
+                          Icons.calendar_today_rounded,
+                          size: 13,
+                          color: theme.colorScheme.secondary,
+                        ),
+                        const SizedBox(width: 4),
                         Text(
                           _getYearFromDate(book.publishedDate),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontSize: 12,
-                          ),
+                          style: theme.textTheme.bodySmall,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-
-                    // Shelf status indicator badge or Category Tag
-                    Row(
-                      children: [
-                        if (shelf != ShelfStatus.none)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              shelf.displayName,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          )
-                        else if (book.categories.isNotEmpty)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withOpacity(0.08),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              book.categories.first,
-                              style: TextStyle(
-                                color: theme.colorScheme.primary,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
+                    const SizedBox(height: 10),
+                    if (shelf != ShelfStatus.none)
+                      _buildTag(
+                        shelf.displayName,
+                        theme.colorScheme.primary,
+                        Colors.white,
+                      )
+                    else if (book.categories.isNotEmpty)
+                      _buildTag(
+                        book.categories.first,
+                        theme.colorScheme.secondaryContainer,
+                        theme.colorScheme.onSecondaryContainer,
+                      ),
                   ],
                 ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 38),
+                child: Icon(Icons.chevron_right_rounded, size: 21),
               ),
             ],
           ),
@@ -355,39 +296,37 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildFallbackCover(String title) {
+  Widget _buildTag(String label, Color background, Color foreground) {
     return Container(
-      color: Colors.grey[200],
-      alignment: Alignment.center,
-      padding: const EdgeInsets.all(4),
+      constraints: const BoxConstraints(maxWidth: 180),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(6),
+      ),
       child: Text(
-        title,
-        maxLines: 3,
+        label,
+        maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.bold,
-          color: Colors.black38,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.labelMedium?.copyWith(color: foreground, fontSize: 10),
       ),
     );
   }
 
   String _getYearFromDate(String date) {
     if (date.isEmpty) return 'Unknown year';
-    if (date.length >= 4) {
-      return date.substring(0, 4);
-    }
-    return date;
+    return date.length >= 4 ? date.substring(0, 4) : date;
   }
 
-  void _openBookDetail(String bookId) {
+  void _openBookDetail(Book book) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => BookDetailScreen(
-          bookId: bookId,
+          bookId: book.id,
+          initialBook: book,
           firebaseService: widget.firebaseService,
           apiService: widget.apiService,
         ),
