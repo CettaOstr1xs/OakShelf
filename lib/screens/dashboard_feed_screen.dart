@@ -723,7 +723,7 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Add at least 3 books to your Wishlist or Finished shelf to unlock top-rated book recommendations matching your taste.',
+                  'Add at least 3 books to your Wishlist or Finished shelf to unlock diverse book recommendations tailored to your taste.',
                   style: theme.textTheme.bodySmall,
                   textAlign: TextAlign.center,
                 ),

@@ -33,6 +33,18 @@ class GoogleBooksService {
     return true;
   }
 
+  // Validate that a recommended book has rich info for display:
+  // title, authors, description (non-empty, non-default), and page count.
+  bool _hasCompleteDisplayInfo(Book b) {
+    if (!isCompleteData(b)) return false;
+    // Must have a real description (not the default "No description available.")
+    final desc = b.description.trim().toLowerCase();
+    if (desc.isEmpty || desc == 'no description available.') return false;
+    // Must have page count
+    if (b.pageCount == null || b.pageCount! <= 0) return false;
+    return true;
+  }
+
   // Main search entry point using Hardcover GraphQL API
   Future<List<Book>> searchBooks(String query) async {
     if (query.trim().isEmpty) return [];
@@ -209,7 +221,8 @@ class GoogleBooksService {
     return null;
   }
 
-  // Fetch ultra-fast recommendations in parallel, strictly filtering out incomplete data books & 5-star/duplicate titles
+  // Fetch randomized book recommendations with author diversity,
+  // only including books with complete info and below-perfect ratings.
   Future<List<Book>> fetchBookRecommendations(List<Book> userBooks) async {
     if (userBooks.isEmpty) return [];
 
@@ -221,41 +234,42 @@ class GoogleBooksService {
           .toSet();
       final random = Random();
 
-      // Extract authors and genres
-      Set<String> userGenres = {};
-      Set<String> userAuthors = {};
+      // Collect the set of "seed" author names already in the user's library
+      final existingAuthors = userBooks
+          .expand((b) => b.authors)
+          .where((a) => a.toLowerCase() != 'unknown author')
+          .toSet();
 
-      for (var b in userBooks) {
-        for (var cat in b.categories) {
-          if (cat.trim().isNotEmpty) userGenres.add(cat.trim());
-        }
-        for (var a in b.authors) {
-          if (a.isNotEmpty && a != 'Unknown Author') userAuthors.add(a.trim());
-        }
-      }
+      final userGenres = userBooks
+          .expand((b) => b.categories)
+          .where((c) => c.trim().isNotEmpty)
+          .toSet();
 
-      // Prepare search queries to run in parallel
+      // Build a diverse set of search queries to gather candidates.
+      // Mix of authors (from user's library), genres, and fallback terms.
       List<String> queryList = [];
 
-      List<String> authorList = userAuthors.toList()..shuffle(random);
-      queryList.addAll(authorList.take(2));
+      final authorList = existingAuthors.toList()..shuffle(random);
+      queryList.addAll(authorList.take(3));
 
-      List<String> genreList = userGenres.toList()..shuffle(random);
-      queryList.addAll(genreList.take(2));
+      final genreList = userGenres.toList()..shuffle(random);
+      queryList.addAll(genreList.take(3));
 
-      if (queryList.length < 3) {
+      if (queryList.length < 4) {
         final popularTerms = [
           'fiction',
           'fantasy',
           'thriller',
           'sci-fi',
           'bestseller',
+          'mystery',
+          'romance',
         ];
         popularTerms.shuffle(random);
         queryList.addAll(popularTerms.take(3));
       }
 
-      // ULTRA FAST LOAD: Execute search queries IN PARALLEL!
+      // Execute search queries IN PARALLEL for speed
       final searchFutures = queryList.map((q) => searchBooks(q)).toList();
       final searchResults = await Future.wait(searchFutures);
 
@@ -264,57 +278,81 @@ class GoogleBooksService {
         candidatePool.addAll(list);
       }
 
-      // Enrich missing details for candidates if needed
-      final detailFutures = candidatePool.take(15).map((b) async {
-        if (!isCompleteData(b)) {
-          final detailed = await getBookDetails(b.id);
-          return detailed ?? b;
-        }
-        return b;
-      }).toList();
-
-      final enrichedCandidates = await Future.wait(detailFutures);
-
-      // Deduplicate candidate books and filter out existing bookshelf titles/editions
+      // Deduplicate candidates by normalized title
       final Map<String, Book> uniqueMap = {};
-      for (var b in enrichedCandidates) {
+      for (var b in candidatePool) {
         final normalizedCandidate = _normalizeTitle(b.title);
-
-        // EXCLUDE if ID matches OR if title/edition matches a book already in bookshelf!
         if (existingIds.contains(b.id) ||
             existingNormalizedTitles.contains(normalizedCandidate)) {
           continue;
         }
-
         if (!uniqueMap.containsKey(normalizedCandidate)) {
           uniqueMap[normalizedCandidate] = b;
         }
       }
 
-      // Relaxed Filter: Must have basic title and author details
-      List<Book> filtered = uniqueMap.values.where((b) {
-        return isCompleteData(b);
+      // Enrich details for candidates that might be missing data
+      final detailFutures = uniqueMap.values.take(20).map((b) async {
+        if (!isCompleteData(b) || !_hasCompleteDisplayInfo(b)) {
+          final detailed = await getBookDetails(b.id);
+          if (detailed != null && _hasCompleteDisplayInfo(detailed)) {
+            return detailed;
+          }
+        }
+        return b;
+      }).toList();
+      final enrichedCandidates = await Future.wait(detailFutures);
+
+      // Filter: only books with complete display info AND below 5-star rating
+      List<Book> filtered = enrichedCandidates.where((b) {
+        // Must have complete info
+        if (!_hasCompleteDisplayInfo(b)) return false;
+        // Must NOT have a perfect 5-star rating
+        if (b.averageRating != null && b.averageRating! >= 5.0) return false;
+        return true;
       }).toList();
 
-      // Sort by highest rating first + genre match bonus!
-      filtered.sort((a, b) {
-        final ratingA = a.averageRating ?? 0.0;
-        final ratingB = b.averageRating ?? 0.0;
+      // --- Author Diversity + Randomization ---
+      // Group books by their first author so we can spread across authors.
+      final Map<String, List<Book>> byFirstAuthor = {};
+      for (var b in filtered) {
+        final firstAuthor = b.authors.isNotEmpty
+            ? b.authors.first.toLowerCase()
+            : 'unknown';
+        byFirstAuthor.putIfAbsent(firstAuthor, () => []).add(b);
+      }
 
-        final bool genreMatchA =
-            a.categories.any((c) => userGenres.contains(c)) ||
-            a.authors.any((auth) => userAuthors.contains(auth));
-        final bool genreMatchB =
-            b.categories.any((c) => userGenres.contains(c)) ||
-            b.authors.any((auth) => userAuthors.contains(auth));
+      final authorKeys = byFirstAuthor.keys.toList()..shuffle(random);
+      final List<Book> diversified = [];
+      final usedIds = <String>{};
+      var safetyCounter = 0;
 
-        final scoreA = ratingA + (genreMatchA ? 0.3 : 0.0);
-        final scoreB = ratingB + (genreMatchB ? 0.3 : 0.0);
+      while (diversified.length < 10 && safetyCounter < 100) {
+        for (var key in authorKeys) {
+          if (diversified.length >= 10) break;
+          if (safetyCounter >= 100) break;
+          final booksForAuthor = byFirstAuthor[key]!;
+          if (booksForAuthor.isEmpty) continue;
 
-        return scoreB.compareTo(scoreA);
-      });
+          // Pick books from this author that haven't been used yet
+          final unused =
+              booksForAuthor.where((b) => !usedIds.contains(b.id)).toList();
+          if (unused.isEmpty) continue;
 
-      return filtered.take(10).toList();
+          unused.shuffle(random);
+          final pick = unused.first;
+          if (pick.averageRating != null && pick.averageRating! >= 5.0) {
+            continue;
+          }
+          diversified.add(pick);
+          usedIds.add(pick.id);
+          safetyCounter++;
+        }
+      }
+
+      // Shuffle the final result for randomness
+      diversified.shuffle(random);
+      return diversified.take(10).toList();
     } catch (e) {
       print('Error fetching fast recommendations: $e');
       return [];
