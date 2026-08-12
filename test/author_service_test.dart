@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bookery/services/author_service.dart';
+import 'package:oakshelf/services/author_service.dart';
 
 void main() {
   test('AuthorService fetches and parses author info correctly', () async {

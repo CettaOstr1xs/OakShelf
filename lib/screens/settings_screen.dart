@@ -25,14 +25,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             NatureHeroCard(
-              startColor: BookeryTheme.oceanBlueColor,
-              endColor: BookeryTheme.primaryColor,
+              startColor: OakShelfTheme.oceanBlueColor,
+              endColor: OakShelfTheme.primaryColor,
               padding: const EdgeInsets.all(20),
               child: Row(
                 children: [
                   const Icon(
                     Icons.cloud_done_rounded,
-                    color: BookeryTheme.accentGoldColor,
+                    color: OakShelfTheme.accentGoldColor,
                     size: 32,
                   ),
                   const SizedBox(width: 14),
@@ -50,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Text(
                           'Books, quotes, and goals sync through Firestore.',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: BookeryTheme.skyColor,
+                            color: OakShelfTheme.skyColor,
                           ),
                         ),
                       ],
@@ -64,7 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _buildSectionHeader('Cloud Integration'),
             Card(
               elevation: 0,
-              color: BookeryTheme.surfaceColor,
+              color: OakShelfTheme.surfaceColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
                 side: BorderSide(color: Colors.grey[200]!),
@@ -112,7 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _buildSettingsTile(
               icon: Icons.info_outline_rounded,
               title: 'Version',
-              subtitle: 'Bookery v1.0.0 (Firebase Edition)',
+              subtitle: 'OakShelf v1.0.0 (Firebase Edition)',
               onTap: () {},
             ),
             _buildSettingsTile(
@@ -153,7 +153,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.only(bottom: 8),
-      color: BookeryTheme.surfaceColor,
+      color: OakShelfTheme.surfaceColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: Colors.grey[200]!),

@@ -107,7 +107,7 @@ class _FullShowcaseScreenState extends State<FullShowcaseScreen> {
                                 )
                               : null,
                           filled: true,
-                          fillColor: BookeryTheme.surfaceColor,
+                          fillColor: OakShelfTheme.surfaceColor,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 12,

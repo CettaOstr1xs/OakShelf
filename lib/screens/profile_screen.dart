@@ -129,8 +129,8 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildUserHeader(BuildContext context, String tier) {
     final theme = Theme.of(context);
     return NatureHeroCard(
-      startColor: BookeryTheme.forestDeep,
-      endColor: BookeryTheme.primaryColor,
+      startColor: OakShelfTheme.forestDeep,
+      endColor: OakShelfTheme.primaryColor,
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
@@ -140,7 +140,7 @@ class ProfileScreen extends StatelessWidget {
             height: 70,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: BookeryTheme.accentGoldColor, width: 2),
+              border: Border.all(color: OakShelfTheme.accentGoldColor, width: 2),
               color: Colors.white.withValues(alpha: 0.12),
             ),
             child: const Icon(
@@ -166,7 +166,7 @@ class ProfileScreen extends StatelessWidget {
                 Text(
                   tier,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    color: BookeryTheme.accentGoldColor,
+                    color: OakShelfTheme.accentGoldColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -175,7 +175,7 @@ class ProfileScreen extends StatelessWidget {
                   'Cloud library connected',
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontSize: 10,
-                    color: BookeryTheme.skyColor,
+                    color: OakShelfTheme.skyColor,
                   ),
                 ),
               ],

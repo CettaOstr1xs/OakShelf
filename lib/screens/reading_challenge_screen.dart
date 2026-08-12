@@ -124,8 +124,8 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                     children: [
                       // Main Challenge Progress Card
                       NatureHeroCard(
-                        startColor: BookeryTheme.forestDeep,
-                        endColor: BookeryTheme.oceanBlueColor,
+                        startColor: OakShelfTheme.forestDeep,
+                        endColor: OakShelfTheme.oceanBlueColor,
                         padding: const EdgeInsets.all(24),
                         child: Column(
                           children: [
@@ -136,7 +136,7 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                                   children: [
                                     const Icon(
                                       Icons.emoji_events_rounded,
-                                      color: BookeryTheme.accentGoldColor,
+                                      color: OakShelfTheme.accentGoldColor,
                                       size: 28,
                                     ),
                                     const SizedBox(width: 8),
@@ -146,7 +146,7 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                                           ?.copyWith(
                                             fontWeight: FontWeight.bold,
                                             letterSpacing: 1.2,
-                                            color: BookeryTheme.skyColor,
+                                            color: OakShelfTheme.skyColor,
                                           ),
                                     ),
                                   ],
@@ -179,7 +179,7 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                                     ),
                                     valueColor:
                                         const AlwaysStoppedAnimation<Color>(
-                                          BookeryTheme.accentGoldColor,
+                                          OakShelfTheme.accentGoldColor,
                                         ),
                                   ),
                                 ),
@@ -198,7 +198,7 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                                       style: theme.textTheme.bodySmall
                                           ?.copyWith(
                                             fontWeight: FontWeight.w600,
-                                            color: BookeryTheme.skyColor,
+                                            color: OakShelfTheme.skyColor,
                                           ),
                                     ),
                                   ],

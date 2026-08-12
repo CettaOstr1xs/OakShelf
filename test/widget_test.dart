@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:bookery/main.dart';
-import 'package:bookery/models/book.dart';
-import 'package:bookery/models/quote.dart';
-import 'package:bookery/services/google_books_service.dart';
-import 'package:bookery/services/firebase_service.dart';
-import 'package:bookery/screens/home_screen.dart';
-import 'package:bookery/theme/theme.dart';
+import 'package:oakshelf/main.dart';
+import 'package:oakshelf/models/book.dart';
+import 'package:oakshelf/models/quote.dart';
+import 'package:oakshelf/services/google_books_service.dart';
+import 'package:oakshelf/services/firebase_service.dart';
+import 'package:oakshelf/screens/home_screen.dart';
+import 'package:oakshelf/theme/theme.dart';
 
 // Stub implementation of FirebaseService to bypass real native SDK checks during tests
 class MockFirebaseService implements FirebaseService {
@@ -63,8 +63,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // Verify that the Bookery shell renders correctly
-    expect(find.text('Bookery'), findsOneWidget);
+    // Verify that the OakShelf shell renders correctly
+    expect(find.text('OakShelf'), findsOneWidget);
   });
 
   testWidgets('Library body renders with an empty mocked library', (
@@ -74,7 +74,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        theme: BookeryTheme.lightTheme,
+        theme: OakShelfTheme.lightTheme,
         home: HomeScreen(
           firebaseService: mockFirebaseService,
           apiService: GoogleBooksService(),

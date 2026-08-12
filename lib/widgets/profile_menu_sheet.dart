@@ -55,7 +55,7 @@ void showProfileMenuSheet({
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [BookeryTheme.forestDeep, BookeryTheme.primaryColor],
+                  colors: [OakShelfTheme.forestDeep, OakShelfTheme.primaryColor],
                 ),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
@@ -87,7 +87,7 @@ void showProfileMenuSheet({
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Bookery Reader',
+                          'OakShelf Reader',
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: Colors.white,
                             fontSize: 17,
@@ -99,13 +99,13 @@ void showProfileMenuSheet({
                             const Icon(
                               Icons.stars_rounded,
                               size: 15,
-                              color: BookeryTheme.accentGoldColor,
+                              color: OakShelfTheme.accentGoldColor,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               'Bibliophile • Level 4',
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: BookeryTheme.skyColor,
+                                color: OakShelfTheme.skyColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
@@ -241,7 +241,7 @@ Widget _buildProfileNavButton({
     padding: const EdgeInsets.only(bottom: 8.0),
     child: Card(
       elevation: 0,
-      color: BookeryTheme.surfaceColor,
+      color: OakShelfTheme.surfaceColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(color: Colors.grey[200]!),

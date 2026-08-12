@@ -296,7 +296,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                      ],
+                   ],
                     ),
                   ),
                 ),

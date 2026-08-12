@@ -1,6 +1,6 @@
-# Bookery
+# OakShelf
 
-Bookery is a premium, beautifully designed book companion and tracker application built using Flutter. It helps book lovers organize their library, track their reading journey, set personal goals, and find inspiration through literature.
+OakShelf is a premium, beautifully designed book companion and tracker application built using Flutter. It helps book lovers organize their library, track their reading journey, set personal goals, and find inspiration through literature.
 
 ---
 

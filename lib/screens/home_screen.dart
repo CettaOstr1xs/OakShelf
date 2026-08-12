@@ -262,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return const NatureErrorState(
                 title: 'Your library could not load',
                 message:
-                    'Bookery could not read your saved books. Check your connection or Firebase setup, then try again.',
+                    'OakShelf could not read your saved books. Check your connection or Firebase setup, then try again.',
               );
             }
 
@@ -341,7 +341,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     )
                                   : null,
                               filled: true,
-                              fillColor: BookeryTheme.surfaceColor,
+                              fillColor: OakShelfTheme.surfaceColor,
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 12,
@@ -370,8 +370,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               final percent = (progress * 100).toInt();
 
                               return NatureHeroCard(
-                                startColor: BookeryTheme.oceanBlueColor,
-                                endColor: BookeryTheme.primaryColor,
+                                startColor: OakShelfTheme.oceanBlueColor,
+                                endColor: OakShelfTheme.primaryColor,
                                 onTap: _openReadingChallenge,
                                 padding: const EdgeInsets.all(18),
                                 child: Column(
@@ -386,7 +386,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             const Icon(
                                               Icons.emoji_events_rounded,
                                               color:
-                                                  BookeryTheme.accentGoldColor,
+                                                  OakShelfTheme.accentGoldColor,
                                               size: 24,
                                             ),
                                             const SizedBox(width: 8),
@@ -415,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           style: theme.textTheme.bodySmall
                                               ?.copyWith(
                                                 fontWeight: FontWeight.w600,
-                                                color: BookeryTheme.skyColor,
+                                                color: OakShelfTheme.skyColor,
                                               ),
                                         ),
                                         Text(
@@ -423,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           style: theme.textTheme.bodySmall
                                               ?.copyWith(
                                                 fontWeight: FontWeight.bold,
-                                                color: BookeryTheme
+                                                color: OakShelfTheme
                                                     .accentGoldColor,
                                               ),
                                         ),
@@ -439,7 +439,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             .withValues(alpha: 0.2),
                                         valueColor:
                                             const AlwaysStoppedAnimation<Color>(
-                                              BookeryTheme.accentGoldColor,
+                                              OakShelfTheme.accentGoldColor,
                                             ),
                                       ),
                                     ),

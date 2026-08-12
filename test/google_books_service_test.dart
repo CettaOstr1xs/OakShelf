@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bookery/services/google_books_service.dart';
-import 'package:bookery/models/book.dart';
+import 'package:oakshelf/services/google_books_service.dart';
+import 'package:oakshelf/models/book.dart';
 
 void main() {
   test('GoogleBooksService fetches book recommendations and filters duplicates correctly', () async {

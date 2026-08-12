@@ -66,7 +66,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: String.fromEnvironment('FIREBASE_IOS_MESSAGING_SENDER_ID'),
     projectId: String.fromEnvironment('FIREBASE_IOS_PROJECT_ID'),
     storageBucket: String.fromEnvironment('FIREBASE_IOS_STORAGE_BUCKET'),
-    iosBundleId: String.fromEnvironment('FIREBASE_IOS_BUNDLE_ID', defaultValue: 'com.example.bookery'),
+    iosBundleId: String.fromEnvironment('FIREBASE_IOS_BUNDLE_ID', defaultValue: 'com.example.oakshelf'),
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -75,7 +75,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: String.fromEnvironment('FIREBASE_MACOS_MESSAGING_SENDER_ID'),
     projectId: String.fromEnvironment('FIREBASE_MACOS_PROJECT_ID'),
     storageBucket: String.fromEnvironment('FIREBASE_MACOS_STORAGE_BUCKET'),
-    iosBundleId: String.fromEnvironment('FIREBASE_MACOS_BUNDLE_ID', defaultValue: 'com.example.bookery'),
+    iosBundleId: String.fromEnvironment('FIREBASE_MACOS_BUNDLE_ID', defaultValue: 'com.example.oakshelf'),
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

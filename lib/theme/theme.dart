@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class BookeryTheme {
+class OakShelfTheme {
   static const Color primaryColor = Color(0xFF176B4D);
   static const Color forestDeep = Color(0xFF0B3D2E);
   static const Color leafColor = Color(0xFF6F9F63);

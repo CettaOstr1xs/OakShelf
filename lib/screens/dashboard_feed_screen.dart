@@ -219,9 +219,9 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
         title: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.eco_rounded, size: 20, color: BookeryTheme.primaryColor),
+            Icon(Icons.eco_rounded, size: 20, color: OakShelfTheme.primaryColor),
             SizedBox(width: 7),
-            Text('Bookery'),
+            Text('OakShelf'),
           ],
         ),
         actions: [
@@ -304,10 +304,10 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: BookeryTheme.sandColor,
+                          color: OakShelfTheme.sandColor,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: BookeryTheme.accentGoldColor,
+                            color: OakShelfTheme.accentGoldColor,
                           ),
                         ),
                         child: const Icon(
@@ -355,8 +355,8 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
     final theme = Theme.of(context);
 
     return NatureHeroCard(
-      startColor: BookeryTheme.forestDeep,
-      endColor: BookeryTheme.oceanBlueColor,
+      startColor: OakShelfTheme.forestDeep,
+      endColor: OakShelfTheme.oceanBlueColor,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
       child: DefaultTextStyle.merge(
         style: const TextStyle(color: Colors.white),
@@ -369,7 +369,7 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
                   children: [
                     const Icon(
                       Icons.format_quote_rounded,
-                      color: BookeryTheme.accentGoldColor,
+                      color: OakShelfTheme.accentGoldColor,
                       size: 30,
                     ),
                     const SizedBox(width: 8),
@@ -398,7 +398,7 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
                                   : Icons.bookmark_add_outlined,
                               size: 22,
                               color: _isQuoteSaved
-                                  ? BookeryTheme.accentGoldColor
+                                  ? OakShelfTheme.accentGoldColor
                                   : Colors.white,
                             ),
                       tooltip: _isQuoteSaved ? 'Quote Saved' : 'Save Quote',
@@ -432,7 +432,7 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: BookeryTheme.skyColor,
+                color: OakShelfTheme.skyColor,
               ),
             ),
           ],
@@ -445,9 +445,9 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
     final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: BookeryTheme.surfaceColor,
+        color: OakShelfTheme.surfaceColor,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: BookeryTheme.outlineColor),
+        border: Border.all(color: OakShelfTheme.outlineColor),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),

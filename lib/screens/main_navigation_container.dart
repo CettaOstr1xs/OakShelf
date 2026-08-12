@@ -293,18 +293,18 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
                     margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
                     height: 72,
                     decoration: BoxDecoration(
-                      color: BookeryTheme.surfaceColor.withValues(alpha: 0.98),
+                      color: OakShelfTheme.surfaceColor.withValues(alpha: 0.98),
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
-                          color: BookeryTheme.forestDeep.withValues(
+                          color: OakShelfTheme.forestDeep.withValues(
                             alpha: 0.16,
                           ),
                           blurRadius: 24,
                           offset: const Offset(0, 10),
                         ),
                       ],
-                      border: Border.all(color: BookeryTheme.outlineColor),
+                      border: Border.all(color: OakShelfTheme.outlineColor),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -361,15 +361,15 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: BookeryTheme.accentGoldColor,
+                            color: OakShelfTheme.accentGoldColor,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: BookeryTheme.surfaceColor,
+                              color: OakShelfTheme.surfaceColor,
                               width: 4,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: BookeryTheme.forestDeep.withValues(
+                                color: OakShelfTheme.forestDeep.withValues(
                                   alpha: 0.22,
                                 ),
                                 blurRadius: 14,
@@ -379,7 +379,7 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
                           ),
                           child: const Icon(
                             Icons.search_rounded,
-                            color: BookeryTheme.textDarkColor,
+                            color: OakShelfTheme.textDarkColor,
                             size: 28,
                           ),
                         ),

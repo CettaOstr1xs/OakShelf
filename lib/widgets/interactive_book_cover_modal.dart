@@ -27,7 +27,7 @@ class InteractiveBookCoverModal extends StatefulWidget {
       PageRouteBuilder(
         opaque: false,
         barrierDismissible: true,
-        barrierColor: BookeryTheme.forestDeep.withValues(alpha: 0.92),
+        barrierColor: OakShelfTheme.forestDeep.withValues(alpha: 0.92),
         transitionDuration: const Duration(milliseconds: 280),
         reverseTransitionDuration: const Duration(milliseconds: 240),
         pageBuilder: (context, animation, secondaryAnimation) {

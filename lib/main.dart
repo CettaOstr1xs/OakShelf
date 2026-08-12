@@ -44,8 +44,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bookery',
-      theme: BookeryTheme.lightTheme,
+      title: 'OakShelf',
+      theme: OakShelfTheme.lightTheme,
       debugShowCheckedModeBanner: false,
       home: MainNavigationContainer(
         firebaseService: firebaseService,

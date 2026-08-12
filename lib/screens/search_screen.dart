@@ -92,8 +92,8 @@ class _SearchScreenState extends State<SearchScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: NatureHeroCard(
-                startColor: BookeryTheme.oceanBlueColor,
-                endColor: BookeryTheme.primaryColor,
+                startColor: OakShelfTheme.oceanBlueColor,
+                endColor: OakShelfTheme.primaryColor,
                 padding: const EdgeInsets.fromLTRB(18, 17, 18, 18),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,7 +108,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     Text(
                       'Search the catalog by title, author, or genre.',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: BookeryTheme.skyColor,
+                        color: OakShelfTheme.skyColor,
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -132,7 +132,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                       onPressed: _clearSearch,
                                     )
                                   : null,
-                              fillColor: BookeryTheme.surfaceColor,
+                              fillColor: OakShelfTheme.surfaceColor,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide.none,
@@ -150,8 +150,8 @@ class _SearchScreenState extends State<SearchScreen> {
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size(52, 52),
                             padding: EdgeInsets.zero,
-                            backgroundColor: BookeryTheme.accentGoldColor,
-                            foregroundColor: BookeryTheme.textDarkColor,
+                            backgroundColor: OakShelfTheme.accentGoldColor,
+                            foregroundColor: OakShelfTheme.textDarkColor,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -247,7 +247,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         if (book.averageRating != null) ...[
                           const Icon(
                             Icons.star_rounded,
-                            color: BookeryTheme.accentGoldColor,
+                            color: OakShelfTheme.accentGoldColor,
                             size: 17,
                           ),
                           const SizedBox(width: 3),

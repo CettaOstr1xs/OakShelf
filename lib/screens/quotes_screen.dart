@@ -261,7 +261,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
                             width: 44,
                             height: 44,
                             decoration: BoxDecoration(
-                              color: BookeryTheme.sandColor,
+                              color: OakShelfTheme.sandColor,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Icon(
@@ -306,7 +306,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
                                 )
                               : null,
                           filled: true,
-                          fillColor: BookeryTheme.surfaceColor,
+                          fillColor: OakShelfTheme.surfaceColor,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 12,
@@ -363,10 +363,10 @@ class _QuotesScreenState extends State<QuotesScreen> {
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 16),
                                   decoration: BoxDecoration(
-                                    color: BookeryTheme.surfaceColor,
+                                    color: OakShelfTheme.surfaceColor,
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: BookeryTheme.outlineColor,
+                                      color: OakShelfTheme.outlineColor,
                                       width: 1.2,
                                     ),
                                     boxShadow: [
@@ -388,8 +388,8 @@ class _QuotesScreenState extends State<QuotesScreen> {
                                           Container(
                                             width: 5,
                                             color: index.isEven
-                                                ? BookeryTheme.primaryColor
-                                                : BookeryTheme.oceanBlueColor,
+                                                ? OakShelfTheme.primaryColor
+                                                : OakShelfTheme.oceanBlueColor,
                                           ),
 
                                           // Main Card Content (Balanced & Centered)

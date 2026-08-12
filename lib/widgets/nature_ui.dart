@@ -47,8 +47,8 @@ class NatureBackdrop extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    BookeryTheme.accentGoldColor.withValues(alpha: 0.26),
-                    BookeryTheme.accentGoldColor.withValues(alpha: 0),
+                    OakShelfTheme.accentGoldColor.withValues(alpha: 0.26),
+                    OakShelfTheme.accentGoldColor.withValues(alpha: 0),
                   ],
                 ),
               ),
@@ -62,7 +62,7 @@ class NatureBackdrop extends StatelessWidget {
             child: Icon(
               Icons.eco_rounded,
               size: 118,
-              color: BookeryTheme.leafColor.withValues(alpha: 0.07),
+              color: OakShelfTheme.leafColor.withValues(alpha: 0.07),
             ),
           ),
         ),
@@ -102,14 +102,14 @@ class NatureHeroCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            startColor ?? BookeryTheme.forestDeep,
-            endColor ?? BookeryTheme.primaryColor,
+            startColor ?? OakShelfTheme.forestDeep,
+            endColor ?? OakShelfTheme.primaryColor,
           ],
         ),
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: BookeryTheme.forestDeep.withValues(alpha: 0.2),
+            color: OakShelfTheme.forestDeep.withValues(alpha: 0.2),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -125,7 +125,7 @@ class NatureHeroCard extends StatelessWidget {
               height: 136,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: BookeryTheme.accentGoldColor.withValues(alpha: 0.16),
+                color: OakShelfTheme.accentGoldColor.withValues(alpha: 0.16),
               ),
             ),
           ),
@@ -243,9 +243,9 @@ class NatureEmptyState extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
       decoration: BoxDecoration(
-        color: BookeryTheme.surfaceColor.withValues(alpha: 0.9),
+        color: OakShelfTheme.surfaceColor.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: BookeryTheme.outlineColor),
+        border: Border.all(color: OakShelfTheme.outlineColor),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -373,7 +373,7 @@ class NatureBookCover extends StatelessWidget {
         borderRadius: BorderRadius.circular(radius),
         boxShadow: [
           BoxShadow(
-            color: BookeryTheme.forestDeep.withValues(alpha: 0.18),
+            color: OakShelfTheme.forestDeep.withValues(alpha: 0.18),
             blurRadius: 12,
             offset: const Offset(0, 7),
           ),
@@ -386,9 +386,9 @@ class NatureBookCover extends StatelessWidget {
   Widget _fallback(BuildContext context) {
     final hue = title.codeUnits.fold<int>(0, (sum, value) => sum + value) % 3;
     final gradients = [
-      const [BookeryTheme.forestDeep, BookeryTheme.primaryColor],
-      const [Color(0xFF0D526F), BookeryTheme.oceanBlueColor],
-      const [Color(0xFF7B641C), BookeryTheme.accentGoldColor],
+      const [OakShelfTheme.forestDeep, OakShelfTheme.primaryColor],
+      const [Color(0xFF0D526F), OakShelfTheme.oceanBlueColor],
+      const [Color(0xFF7B641C), OakShelfTheme.accentGoldColor],
     ];
     return Container(
       padding: const EdgeInsets.all(10),

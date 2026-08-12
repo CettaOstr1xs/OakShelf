@@ -1,6 +1,6 @@
 {
-    "name": "bookery",
-    "short_name": "bookery",
+    "name": "OakShelf",
+    "short_name": "OakShelf",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
