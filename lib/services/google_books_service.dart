@@ -313,41 +313,18 @@ class GoogleBooksService {
       }).toList();
 
       // --- Author Diversity + Randomization ---
-      // Group books by their first author so we can spread across authors.
-      final Map<String, List<Book>> byFirstAuthor = {};
-      for (var b in filtered) {
-        final firstAuthor = b.authors.isNotEmpty
-            ? b.authors.first.toLowerCase()
-            : 'unknown';
-        byFirstAuthor.putIfAbsent(firstAuthor, () => []).add(b);
-      }
-
-      final authorKeys = byFirstAuthor.keys.toList()..shuffle(random);
+      // Pick books from the filtered pool, avoiding duplicates and 5-star books.
       final List<Book> diversified = [];
       final usedIds = <String>{};
-      var safetyCounter = 0;
 
-      while (diversified.length < 10 && safetyCounter < 100) {
-        for (var key in authorKeys) {
-          if (diversified.length >= 10) break;
-          if (safetyCounter >= 100) break;
-          final booksForAuthor = byFirstAuthor[key]!;
-          if (booksForAuthor.isEmpty) continue;
+      final availableBooks = List<Book>.of(filtered)..shuffle(random);
 
-          // Pick books from this author that haven't been used yet
-          final unused =
-              booksForAuthor.where((b) => !usedIds.contains(b.id)).toList();
-          if (unused.isEmpty) continue;
-
-          unused.shuffle(random);
-          final pick = unused.first;
-          if (pick.averageRating != null && pick.averageRating! >= 5.0) {
-            continue;
-          }
-          diversified.add(pick);
-          usedIds.add(pick.id);
-          safetyCounter++;
-        }
+      for (final book in availableBooks) {
+        if (diversified.length >= 10) break;
+        if (usedIds.contains(book.id)) continue;
+        if (book.averageRating != null && book.averageRating! >= 5.0) continue;
+        diversified.add(book);
+        usedIds.add(book.id);
       }
 
       // Shuffle the final result for randomness
