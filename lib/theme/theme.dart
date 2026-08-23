@@ -16,100 +16,152 @@ class OakShelfTheme {
   static const Color outlineColor = Color(0xFFD8E5DC);
   static const Color errorColor = Color(0xFFBA3B3B);
 
-  static ThemeData get lightTheme {
-    final base = ThemeData.light(useMaterial3: true);
-    const scheme = ColorScheme.light(
-      primary: primaryColor,
-      onPrimary: Colors.white,
-      primaryContainer: Color(0xFFD8F2E3),
-      onPrimaryContainer: forestDeep,
-      secondary: oceanBlueColor,
-      onSecondary: Colors.white,
-      secondaryContainer: Color(0xFFD8F1FA),
-      onSecondaryContainer: Color(0xFF0A415D),
-      tertiary: accentGoldColor,
-      onTertiary: textDarkColor,
-      tertiaryContainer: sandColor,
-      onTertiaryContainer: Color(0xFF4F3B00),
-      error: errorColor,
-      surface: surfaceColor,
-      onSurface: textDarkColor,
-      onSurfaceVariant: textMutedColor,
-      outline: outlineColor,
-      outlineVariant: Color(0xFFE8F0EA),
-      shadow: Color(0xFF14372B),
-    );
+  // Forest-night dark mode palette
+  static const Color darkBackgroundColor = Color(0xFF0D1512);
+  static const Color darkSurfaceColor = Color(0xFF17221C);
+  static const Color darkPrimaryColor = Color(0xFF4EBE8B);
+  static const Color moonlightColor = Color(0xFFC9D6EA);
+  static const Color nightSandColor = Color(0xFF20293A);
+  static const Color darkTextColor = Color(0xFFE6EEE9);
+  static const Color darkTextMutedColor = Color(0xFF9AAFA4);
+  static const Color darkOutlineColor = Color(0xFF28362E);
+
+  static ThemeData get lightTheme => _buildTheme(
+        brightness: Brightness.light,
+        palette: const OakPalette.light(),
+      );
+
+  static ThemeData get darkTheme => _buildTheme(
+        brightness: Brightness.dark,
+        palette: const OakPalette.dark(),
+      );
+
+  static ThemeData _buildTheme({
+    required Brightness brightness,
+    required OakPalette palette,
+  }) {
+    final bool isLight = brightness == Brightness.light;
+    final ColorScheme scheme = isLight
+        ? const ColorScheme.light(
+            primary: primaryColor,
+            onPrimary: Colors.white,
+            primaryContainer: Color(0xFFD8F2E3),
+            onPrimaryContainer: forestDeep,
+            secondary: oceanBlueColor,
+            onSecondary: Colors.white,
+            secondaryContainer: Color(0xFFD8F1FA),
+            onSecondaryContainer: Color(0xFF0A415D),
+            tertiary: accentGoldColor,
+            onTertiary: textDarkColor,
+            tertiaryContainer: sandColor,
+            onTertiaryContainer: Color(0xFF4F3B00),
+            error: errorColor,
+            surface: surfaceColor,
+            onSurface: textDarkColor,
+            onSurfaceVariant: textMutedColor,
+            outline: outlineColor,
+            outlineVariant: Color(0xFFE8F0EA),
+            shadow: Color(0xFF14372B),
+          )
+        : const ColorScheme.dark(
+            primary: darkPrimaryColor,
+            onPrimary: Color(0xFF06231A),
+            primaryContainer: Color(0xFF143728),
+            onPrimaryContainer: Color(0xFFBFE9D2),
+            secondary: Color(0xFF6FBEDF),
+            onSecondary: Color(0xFF062330),
+            secondaryContainer: Color(0xFF0F3548),
+            onSecondaryContainer: Color(0xFFBFE3F2),
+            tertiary: moonlightColor,
+            onTertiary: Color(0xFF16202E),
+            tertiaryContainer: nightSandColor,
+            onTertiaryContainer: Color(0xFFE2EAF6),
+            error: Color(0xFFCF6666),
+            surface: darkSurfaceColor,
+            onSurface: darkTextColor,
+            onSurfaceVariant: darkTextMutedColor,
+            outline: darkOutlineColor,
+            outlineVariant: Color(0xFF1E2A23),
+            shadow: Color(0xFF000000),
+          );
+
+    final Color textMain = scheme.onSurface;
+    final Color textMuted = scheme.onSurfaceVariant;
+
+    final base = isLight
+        ? ThemeData.light(useMaterial3: true)
+        : ThemeData.dark(useMaterial3: true);
 
     final textTheme = GoogleFonts.plusJakartaSansTextTheme(base.textTheme)
         .copyWith(
           displayLarge: GoogleFonts.dmSerifDisplay(
-            color: textDarkColor,
+            color: textMain,
             fontSize: 54,
             height: 1.04,
           ),
           displayMedium: GoogleFonts.dmSerifDisplay(
-            color: textDarkColor,
+            color: textMain,
             fontSize: 42,
             height: 1.08,
           ),
           displaySmall: GoogleFonts.dmSerifDisplay(
-            color: textDarkColor,
+            color: textMain,
             fontSize: 34,
             height: 1.08,
           ),
           headlineLarge: GoogleFonts.dmSerifDisplay(
-            color: textDarkColor,
+            color: textMain,
             fontSize: 32,
             height: 1.12,
           ),
           headlineMedium: GoogleFonts.dmSerifDisplay(
-            color: textDarkColor,
+            color: textMain,
             fontSize: 27,
             height: 1.15,
           ),
           headlineSmall: GoogleFonts.dmSerifDisplay(
-            color: textDarkColor,
+            color: textMain,
             fontSize: 22,
             height: 1.2,
           ),
           titleLarge: GoogleFonts.plusJakartaSans(
-            color: textDarkColor,
+            color: textMain,
             fontSize: 18,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.3,
           ),
           titleMedium: GoogleFonts.plusJakartaSans(
-            color: textDarkColor,
+            color: textMain,
             fontSize: 15,
             fontWeight: FontWeight.w700,
           ),
           titleSmall: GoogleFonts.plusJakartaSans(
-            color: textDarkColor,
+            color: textMain,
             fontSize: 13,
             fontWeight: FontWeight.w700,
           ),
           bodyLarge: GoogleFonts.plusJakartaSans(
-            color: textDarkColor,
+            color: textMain,
             fontSize: 16,
             height: 1.5,
           ),
           bodyMedium: GoogleFonts.plusJakartaSans(
-            color: textMutedColor,
+            color: textMuted,
             fontSize: 14,
             height: 1.45,
           ),
           bodySmall: GoogleFonts.plusJakartaSans(
-            color: textMutedColor,
+            color: textMuted,
             fontSize: 12,
             height: 1.4,
           ),
           labelLarge: GoogleFonts.plusJakartaSans(
-            color: textDarkColor,
+            color: textMain,
             fontSize: 14,
             fontWeight: FontWeight.w800,
           ),
           labelMedium: GoogleFonts.plusJakartaSans(
-            color: textMutedColor,
+            color: textMuted,
             fontSize: 12,
             fontWeight: FontWeight.w700,
           ),
@@ -124,59 +176,64 @@ class OakShelfTheme {
 
     return base.copyWith(
       colorScheme: scheme,
-      scaffoldBackgroundColor: backgroundColor,
+      extensions: <ThemeExtension<dynamic>>{palette},
+      scaffoldBackgroundColor: scheme.surface,
       textTheme: textTheme,
       splashFactory: InkSparkle.splashFactory,
       appBarTheme: AppBarTheme(
-        backgroundColor: backgroundColor,
+        backgroundColor: scheme.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
         toolbarHeight: 68,
-        iconTheme: const IconThemeData(color: textDarkColor),
-        actionsIconTheme: const IconThemeData(color: textDarkColor),
+        iconTheme: IconThemeData(color: scheme.onSurface),
+        actionsIconTheme: IconThemeData(color: scheme.onSurface),
         titleTextStyle: GoogleFonts.dmSerifDisplay(
-          color: textDarkColor,
+          color: scheme.onSurface,
           fontSize: 24,
         ),
       ),
       cardTheme: CardThemeData(
-        color: surfaceColor,
+        color: scheme.surfaceContainerLowest.withValues(
+          alpha: isLight ? 1 : 0.6,
+        ),
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         margin: EdgeInsets.zero,
-        shadowColor: forestDeep.withValues(alpha: 0.08),
+        shadowColor: palette.forestDeep.withValues(alpha: 0.08),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: const BorderSide(color: outlineColor),
+          side: BorderSide(color: scheme.outline),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceColor,
+        fillColor: scheme.surfaceContainerLowest.withValues(
+          alpha: isLight ? 1 : 0.6,
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 16,
         ),
         hintStyle: textTheme.bodyMedium?.copyWith(
-          color: textMutedColor.withValues(alpha: 0.72),
+          color: textMuted.withValues(alpha: 0.72),
         ),
         labelStyle: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
-        prefixIconColor: primaryColor,
-        suffixIconColor: textMutedColor,
-        border: inputBorder(outlineColor),
-        enabledBorder: inputBorder(outlineColor),
-        focusedBorder: inputBorder(primaryColor, 1.5),
-        errorBorder: inputBorder(errorColor),
-        focusedErrorBorder: inputBorder(errorColor, 1.5),
+        prefixIconColor: scheme.primary,
+        suffixIconColor: textMuted,
+        border: inputBorder(scheme.outline),
+        enabledBorder: inputBorder(scheme.outline),
+        focusedBorder: inputBorder(scheme.primary, 1.5),
+        errorBorder: inputBorder(scheme.error),
+        focusedErrorBorder: inputBorder(scheme.error, 1.5),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
-          disabledBackgroundColor: outlineColor,
-          disabledForegroundColor: textMutedColor,
+          backgroundColor: scheme.primary,
+          foregroundColor: scheme.onPrimary,
+          disabledBackgroundColor: scheme.outline,
+          disabledForegroundColor: textMuted,
           elevation: 0,
           minimumSize: const Size(48, 52),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -188,10 +245,10 @@ class OakShelfTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: primaryColor,
+          foregroundColor: scheme.primary,
           minimumSize: const Size(48, 50),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
-          side: const BorderSide(color: primaryColor),
+          side: BorderSide(color: scheme.primary),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -200,24 +257,26 @@ class OakShelfTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: primaryColor,
+          foregroundColor: scheme.primary,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: textTheme.labelLarge,
         ),
       ),
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: forestDeep,
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: palette.forestDeep,
         foregroundColor: Colors.white,
         elevation: 4,
         focusElevation: 4,
         highlightElevation: 6,
-        shape: StadiumBorder(),
+        shape: const StadiumBorder(),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: surfaceColor,
-        selectedColor: primaryColor,
-        disabledColor: outlineColor,
-        side: const BorderSide(color: outlineColor),
+        backgroundColor: scheme.surfaceContainerLowest.withValues(
+          alpha: isLight ? 1 : 0.6,
+        ),
+        selectedColor: scheme.primary,
+        disabledColor: scheme.outline,
+        side: BorderSide(color: scheme.outline),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         labelStyle: textTheme.labelMedium!,
         secondaryLabelStyle: textTheme.labelMedium!.copyWith(
@@ -226,47 +285,167 @@ class OakShelfTheme {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: surfaceColor,
+        backgroundColor: scheme.surfaceContainerLowest.withValues(
+          alpha: isLight ? 1 : 0.95,
+        ),
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: surfaceColor,
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: scheme.surface,
         surfaceTintColor: Colors.transparent,
-        modalBackgroundColor: surfaceColor,
-        modalBarrierColor: Color(0x8A0B241B),
-        shape: RoundedRectangleBorder(
+        modalBackgroundColor: scheme.surface,
+        modalBarrierColor: (isLight ? const Color(0x8A0B241B) : Colors.black)
+            .withValues(alpha: 0.72),
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
       ),
-      dividerTheme: const DividerThemeData(
-        color: outlineColor,
+      dividerTheme: DividerThemeData(
+        color: scheme.outline,
         thickness: 1,
         space: 1,
       ),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: primaryColor,
-        linearTrackColor: Color(0xFFDDECE2),
-        circularTrackColor: Color(0xFFDDECE2),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: scheme.primary,
+        linearTrackColor:
+            isLight ? const Color(0xFFDDECE2) : scheme.outlineVariant,
+        circularTrackColor:
+            isLight ? const Color(0xFFDDECE2) : scheme.outlineVariant,
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: forestDeep,
-        contentTextStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
+        backgroundColor: isLight ? palette.forestDeep : scheme.primaryContainer,
+        contentTextStyle: textTheme.bodyMedium?.copyWith(
+          color: isLight
+              ? Colors.white
+              : (textTheme.titleSmall?.color ?? scheme.onSurface),
+        ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? Colors.white
-              : textMutedColor,
+              ? scheme.onPrimary
+              : textMuted,
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? primaryColor
-              : outlineColor,
+              ? scheme.primary
+              : scheme.outline,
         ),
       ),
     );
   }
+}
+
+/// Brand colors that flip between the day (sun/gold) and night (moon)
+/// palettes. Access from any widget with `context.oak`.
+@immutable
+class OakPalette extends ThemeExtension<OakPalette> {
+  /// Gold in light mode, moonlight silver-blue in dark mode.
+  final Color accent;
+
+  /// Deep icon color for chips/tints drawn on top of [accent]-tinted fills.
+  final Color onAccent;
+  final Color sand;
+  final Color leaf;
+  final Color ocean;
+  final Color sky;
+  final Color forestDeep;
+  final Color backdropTop;
+  final Color backdropMid;
+  final Color backdropBottom;
+
+  const OakPalette({
+    required this.accent,
+    required this.onAccent,
+    required this.sand,
+    required this.leaf,
+    required this.ocean,
+    required this.sky,
+    required this.forestDeep,
+    required this.backdropTop,
+    required this.backdropMid,
+    required this.backdropBottom,
+  });
+
+  const OakPalette.light()
+      : this(
+          accent: OakShelfTheme.accentGoldColor,
+          onAccent: const Color(0xFF9A6D00),
+          sand: OakShelfTheme.sandColor,
+          leaf: OakShelfTheme.leafColor,
+          ocean: OakShelfTheme.oceanBlueColor,
+          sky: OakShelfTheme.skyColor,
+          forestDeep: OakShelfTheme.forestDeep,
+          backdropTop: const Color(0xFFF1FAF4),
+          backdropMid: const Color(0xFFF9FBF4),
+          backdropBottom: OakShelfTheme.backgroundColor,
+        );
+
+  const OakPalette.dark()
+      : this(
+          accent: OakShelfTheme.moonlightColor,
+          onAccent: const Color(0xFF232E42),
+          sand: OakShelfTheme.nightSandColor,
+          leaf: const Color(0xFF86AE8C),
+          ocean: const Color(0xFF6FBEDF),
+          sky: const Color(0xFFA7D6E6),
+          forestDeep: const Color(0xFF122019),
+          backdropTop: OakShelfTheme.darkBackgroundColor,
+          backdropMid: const Color(0xFF101A15),
+          backdropBottom: const Color(0xFF0C1310),
+        );
+
+  @override
+  OakPalette copyWith({
+    Color? accent,
+    Color? onAccent,
+    Color? sand,
+    Color? leaf,
+    Color? ocean,
+    Color? sky,
+    Color? forestDeep,
+    Color? backdropTop,
+    Color? backdropMid,
+    Color? backdropBottom,
+  }) {
+    return OakPalette(
+      accent: accent ?? this.accent,
+      onAccent: onAccent ?? this.onAccent,
+      sand: sand ?? this.sand,
+      leaf: leaf ?? this.leaf,
+      ocean: ocean ?? this.ocean,
+      sky: sky ?? this.sky,
+      forestDeep: forestDeep ?? this.forestDeep,
+      backdropTop: backdropTop ?? this.backdropTop,
+      backdropMid: backdropMid ?? this.backdropMid,
+      backdropBottom: backdropBottom ?? this.backdropBottom,
+    );
+  }
+
+  @override
+  OakPalette lerp(ThemeExtension<OakPalette>? other, double t) {
+    if (other is! OakPalette) return this;
+    return OakPalette(
+      accent: Color.lerp(accent, other.accent, t)!,
+      onAccent: Color.lerp(onAccent, other.onAccent, t)!,
+      sand: Color.lerp(sand, other.sand, t)!,
+      leaf: Color.lerp(leaf, other.leaf, t)!,
+      ocean: Color.lerp(ocean, other.ocean, t)!,
+      sky: Color.lerp(sky, other.sky, t)!,
+      forestDeep: Color.lerp(forestDeep, other.forestDeep, t)!,
+      backdropTop: Color.lerp(backdropTop, other.backdropTop, t)!,
+      backdropMid: Color.lerp(backdropMid, other.backdropMid, t)!,
+      backdropBottom: Color.lerp(backdropBottom, other.backdropBottom, t)!,
+    );
+  }
+
+  @override
+  Object get type => OakPalette;
+}
+
+extension OakPaletteContextX on BuildContext {
+  OakPalette get oak => Theme.of(this).extension<OakPalette>()!;
 }

@@ -4,6 +4,7 @@ import '../models/book.dart';
 import '../models/quote.dart';
 import '../services/google_books_service.dart';
 import '../services/firebase_service.dart';
+import '../theme/theme_controller.dart';
 import '../widgets/profile_menu_sheet.dart';
 import '../widgets/nature_ui.dart';
 import '../theme/theme.dart';
@@ -12,11 +13,13 @@ import 'book_detail_screen.dart';
 class DashboardFeedScreen extends StatefulWidget {
   final FirebaseService firebaseService;
   final GoogleBooksService apiService;
+  final ThemeController themeController;
 
   const DashboardFeedScreen({
     super.key,
     required this.firebaseService,
     required this.apiService,
+    required this.themeController,
   });
 
   @override
@@ -174,7 +177,7 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to save quote: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -300,20 +303,30 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
                           ],
                         ),
                       ),
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: OakShelfTheme.sandColor,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: OakShelfTheme.accentGoldColor,
+                      GestureDetector(
+                        onTap: widget.themeController.toggle,
+                        child: Tooltip(
+                          message: widget.themeController.isDark
+                              ? 'Switch to light mode'
+                              : 'Switch to dark mode',
+                          child: Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: context.oak.sand,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: context.oak.accent),
+                            ),
+                            child: Icon(
+                              widget.themeController.isDark
+                                  ? Icons.nights_stay_rounded
+                                  : Icons.wb_sunny_rounded,
+                              color: widget.themeController.isDark
+                                  ? context.oak.accent
+                                  : context.oak.onAccent,
+                              size: 25,
+                            ),
                           ),
-                        ),
-                        child: const Icon(
-                          Icons.wb_sunny_rounded,
-                          color: Color(0xFF9A6D00),
-                          size: 25,
                         ),
                       ),
                     ],
@@ -367,9 +380,9 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
               children: [
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.format_quote_rounded,
-                      color: OakShelfTheme.accentGoldColor,
+                      color: context.oak.accent,
                       size: 30,
                     ),
                     const SizedBox(width: 8),
@@ -398,7 +411,7 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
                                   : Icons.bookmark_add_outlined,
                               size: 22,
                               color: _isQuoteSaved
-                                  ? OakShelfTheme.accentGoldColor
+                                  ? context.oak.accent
                                   : Colors.white,
                             ),
                       tooltip: _isQuoteSaved ? 'Quote Saved' : 'Save Quote',
@@ -432,7 +445,7 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: OakShelfTheme.skyColor,
+                color: context.oak.sky,
               ),
             ),
           ],
@@ -445,9 +458,9 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
     final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: OakShelfTheme.surfaceColor,
+        color: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: OakShelfTheme.outlineColor),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -482,7 +495,7 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
                   'Finished',
                   read.toString(),
                   Icons.check_circle_rounded,
-                  const Color(0xFF9A6D00),
+                  context.oak.onAccent,
                 ),
               ],
             ),
@@ -520,7 +533,11 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
   }
 
   Widget _buildStatDivider() {
-    return Container(width: 1, height: 35, color: Colors.grey[200]);
+    return Container(
+      width: 1,
+      height: 35,
+      color: Theme.of(context).colorScheme.outlineVariant,
+    );
   }
 
   Widget _buildCurrentlyReadingSection(List<Book> readingBooks) {
@@ -557,7 +574,7 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(color: Colors.grey[200]!),
+                  side: BorderSide(color: theme.colorScheme.outline),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -655,7 +672,7 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
                       IconButton(
                         icon: Icon(
                           Icons.chevron_right,
-                          color: Colors.grey[400],
+                          color: theme.colorScheme.outline,
                         ),
                         onPressed: () => _openBookDetail(book.id, book),
                       ),
@@ -700,7 +717,9 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.colorScheme.surfaceContainerLowest.withValues(
+                alpha: 0.7,
+              ),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: theme.colorScheme.primary.withOpacity(0.2),
@@ -765,12 +784,15 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.colorScheme.surfaceContainerLowest.withValues(
+                alpha: 0.7,
+              ),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Text(
+            child: Text(
               'No book recommendations found right now.',
               textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium,
             ),
           ),
         ] else ...[
@@ -822,7 +844,7 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
                                                   Container(
                                                     color: Theme.of(
                                                       context,
-                                                    ).primaryColor,
+                                                    ).colorScheme.primary,
                                                     child: const Center(
                                                       child: Icon(
                                                         Icons.book,
@@ -833,7 +855,9 @@ class _DashboardFeedScreenState extends State<DashboardFeedScreen>
                                                   ),
                                         )
                                       : Container(
-                                          color: Theme.of(context).primaryColor,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
                                         ),
                                 ),
                               ),

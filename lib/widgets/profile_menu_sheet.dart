@@ -44,7 +44,7 @@ void showProfileMenuSheet({
               width: 42,
               height: 4.5,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Theme.of(context).colorScheme.outline,
                 borderRadius: BorderRadius.circular(2.5),
               ),
             ),
@@ -54,8 +54,11 @@ void showProfileMenuSheet({
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [OakShelfTheme.forestDeep, OakShelfTheme.primaryColor],
+                gradient: LinearGradient(
+                  colors: [
+                    context.oak.forestDeep,
+                    theme.colorScheme.primary,
+                  ],
                 ),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
@@ -96,16 +99,16 @@ void showProfileMenuSheet({
                         const SizedBox(height: 2),
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.stars_rounded,
                               size: 15,
-                              color: OakShelfTheme.accentGoldColor,
+                              color: context.oak.accent,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               'Bibliophile • Level 4',
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: OakShelfTheme.skyColor,
+                                color: context.oak.sky,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
@@ -117,7 +120,7 @@ void showProfileMenuSheet({
                   ),
                   IconButton(
                     icon: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
-                    color: Colors.grey[400],
+                    color: Theme.of(context).colorScheme.outline,
                     onPressed: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -139,7 +142,7 @@ void showProfileMenuSheet({
               style: theme.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
-                color: Colors.grey[500],
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 12),
@@ -160,7 +163,7 @@ void showProfileMenuSheet({
               icon: Icons.emoji_events_rounded,
               title: '2026 Reading Challenge',
               subtitle: 'Track your annual reading goal & badges',
-              iconColor: Colors.amber[700],
+              iconColor: context.oak.accent,
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -241,10 +244,10 @@ Widget _buildProfileNavButton({
     padding: const EdgeInsets.only(bottom: 8.0),
     child: Card(
       elevation: 0,
-      color: OakShelfTheme.surfaceColor,
+      color: Theme.of(context).colorScheme.surfaceContainerLowest.withValues(alpha: 0.7),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(color: Theme.of(context).colorScheme.outline),
       ),
       child: Material(
         color: Colors.transparent,
@@ -274,12 +277,12 @@ Widget _buildProfileNavButton({
             subtitle,
             style: theme.textTheme.bodySmall?.copyWith(
               fontSize: 11,
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           trailing: Icon(
             Icons.chevron_right_rounded,
-            color: Colors.grey[400],
+            color: Theme.of(context).colorScheme.outline,
             size: 20,
           ),
         ),

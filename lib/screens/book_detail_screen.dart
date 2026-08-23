@@ -8,6 +8,7 @@ import '../services/hardcover_service.dart';
 import '../services/author_service.dart';
 import '../widgets/interactive_book_cover_modal.dart';
 import '../widgets/nature_ui.dart';
+import '../theme/theme.dart';
 
 class BookDetailScreen extends StatefulWidget {
   final String bookId;
@@ -144,7 +145,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           ),
           child: Container(
             decoration: BoxDecoration(
-              color: theme.colorScheme.background,
+              color: theme.scaffoldBackgroundColor,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(24),
                 topRight: Radius.circular(24),
@@ -354,7 +355,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   Text(
                     'By ',
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onBackground.withOpacity(0.8),
+                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                     ),
                   ),
                   ..._localBook!.authors.asMap().entries.map((entry) {
@@ -415,9 +416,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -430,7 +431,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             icon: Icons.star_rounded,
             iconColor: Colors.amber[600]!,
           ),
-          Container(width: 1, height: 30, color: Colors.grey[200]),
+          Container(width: 1, height: 30, color: theme.colorScheme.outlineVariant),
           _buildMetadataItem(
             value: _localBook!.pageCount != null
                 ? '${_localBook!.pageCount}'
@@ -439,7 +440,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             icon: Icons.auto_stories_rounded,
             iconColor: theme.colorScheme.primary,
           ),
-          Container(width: 1, height: 30, color: Colors.grey[200]),
+          Container(width: 1, height: 30, color: theme.colorScheme.outlineVariant),
           _buildMetadataItem(
             value: year,
             label: 'Published',
@@ -596,11 +597,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                           ),
                           selected: isSelected,
                           selectedColor: theme.colorScheme.primary,
-                          backgroundColor: Colors.white,
+                          backgroundColor: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.6),
                           labelStyle: TextStyle(
                             color: isSelected
                                 ? Colors.white
-                                : theme.colorScheme.onBackground,
+                                : theme.colorScheme.onSurface,
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                           ),
@@ -654,15 +655,15 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               maxLines: 4,
               decoration: InputDecoration(
                 hintText: 'Share your thoughts about this book...',
-                fillColor: Colors.white,
+                fillColor: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.7),
                 filled: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[300]!),
+                  borderSide: BorderSide(color: theme.colorScheme.outline),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[200]!),
+                  borderSide: BorderSide(color: theme.colorScheme.outline),
                 ),
                 contentPadding: const EdgeInsets.all(12),
               ),
@@ -712,9 +713,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       ),
       selected: isSelected,
       selectedColor: theme.colorScheme.primary,
-      backgroundColor: Colors.white,
+      backgroundColor: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.6),
       labelStyle: TextStyle(
-        color: isSelected ? Colors.white : theme.colorScheme.onBackground,
+        color: isSelected ? Colors.white : theme.colorScheme.onSurface,
         fontWeight: FontWeight.bold,
         fontSize: 12,
       ),
@@ -747,13 +748,13 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Row(
         children: [
-          const Icon(Icons.trending_up, size: 20, color: Colors.blueGrey),
+          Icon(Icons.trending_up, size: 20, color: theme.colorScheme.primary),
           const SizedBox(width: 8),
           const Text('Currently on Page: '),
           const SizedBox(width: 8),
@@ -835,7 +836,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 4.0),
                   child: Icon(
                     iconData,
-                    color: const Color(0xFFF2CC8F),
+                    color: context.oak.accent,
                     size: starSize,
                   ),
                 );
@@ -899,7 +900,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               fontWeight: FontWeight.bold,
               fontSize: 10.5,
               letterSpacing: 1.1,
-              color: Colors.grey[600],
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 6),
@@ -939,7 +940,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               fontWeight: FontWeight.bold,
               fontSize: 10.5,
               letterSpacing: 1.1,
-              color: Colors.grey[600],
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 6),
@@ -953,9 +954,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.colorScheme.surfaceContainerLowest,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey[300]!),
+                  border: Border.all(color: theme.colorScheme.outline),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.02),
@@ -968,7 +969,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   mood,
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1E293B),
                   ),
                 ),
               );
@@ -1050,7 +1050,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               width: 40,
                               height: 5,
                               decoration: BoxDecoration(
-                                color: Colors.grey[300],
+                                color: theme.colorScheme.outline,
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
@@ -1334,7 +1334,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
   Widget _buildFallbackCoverSmall(String title) {
     return Container(
-      color: Colors.grey[200],
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       alignment: Alignment.center,
       padding: const EdgeInsets.all(4),
       child: Text(
@@ -1342,10 +1342,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         maxLines: 3,
         overflow: TextOverflow.ellipsis,
         textAlign: TextAlign.center,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 9,
           fontWeight: FontWeight.bold,
-          color: Colors.black54,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       ),
     );

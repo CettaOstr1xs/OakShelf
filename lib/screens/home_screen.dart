@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
             opacity: anim1,
             child: AlertDialog(
               backgroundColor:
-                  theme.colorScheme.background, // Same color as page background
+                  theme.scaffoldBackgroundColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
                 side: BorderSide(
@@ -198,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text('Delete "$shelfName"?'),
         content: Text(
@@ -341,7 +341,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     )
                                   : null,
                               filled: true,
-                              fillColor: OakShelfTheme.surfaceColor,
+                              fillColor: theme.colorScheme
+                                  .surfaceContainerLowest
+                                  .withValues(alpha: 0.7),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 12,
@@ -370,8 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               final percent = (progress * 100).toInt();
 
                               return NatureHeroCard(
-                                startColor: OakShelfTheme.oceanBlueColor,
-                                endColor: OakShelfTheme.primaryColor,
+                                startColor: context.oak.ocean,
                                 onTap: _openReadingChallenge,
                                 padding: const EdgeInsets.all(18),
                                 child: Column(
@@ -383,10 +384,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       children: [
                                         Row(
                                           children: [
-                                            const Icon(
+                                            Icon(
                                               Icons.emoji_events_rounded,
-                                              color:
-                                                  OakShelfTheme.accentGoldColor,
+                                              color: context.oak.accent,
                                               size: 24,
                                             ),
                                             const SizedBox(width: 8),
@@ -415,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           style: theme.textTheme.bodySmall
                                               ?.copyWith(
                                                 fontWeight: FontWeight.w600,
-                                                color: OakShelfTheme.skyColor,
+                                                color: context.oak.sky,
                                               ),
                                         ),
                                         Text(
@@ -423,8 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           style: theme.textTheme.bodySmall
                                               ?.copyWith(
                                                 fontWeight: FontWeight.bold,
-                                                color: OakShelfTheme
-                                                    .accentGoldColor,
+                                                color: context.oak.accent,
                                               ),
                                         ),
                                       ],
@@ -438,9 +437,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         backgroundColor: Colors.white
                                             .withValues(alpha: 0.2),
                                         valueColor:
-                                            const AlwaysStoppedAnimation<Color>(
-                                              OakShelfTheme.accentGoldColor,
-                                            ),
+                                            AlwaysStoppedAnimation<Color>(
+                                          context.oak.accent,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -751,7 +750,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
+                            color: theme.colorScheme.onSurfaceVariant,
                             fontSize: 11,
                           ),
                         ),
@@ -787,7 +786,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     : 'pg $currentPgs',
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   fontSize: 10,
-                                  color: Colors.grey[600],
+                                  color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -890,7 +889,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.delete_outline_rounded, size: 19),
-                  color: Colors.grey[400],
+                  color: theme.colorScheme.outline,
                   tooltip: 'Delete Bookshelf',
                   onPressed: () => _confirmDeleteCustomShelf(shelfName),
                 ),
@@ -928,15 +927,14 @@ class _HomeScreenState extends State<HomeScreen> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[200]!),
+              border: Border.all(color: theme.colorScheme.outline),
             ),
             child: Center(
               child: Text(
                 'No books in "$shelfName" yet. Tap any book to assign it!',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[500],
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -1110,7 +1108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
+                            color: theme.colorScheme.onSurfaceVariant,
                             fontSize: 11,
                           ),
                         ),

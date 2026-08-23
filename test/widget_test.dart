@@ -7,6 +7,7 @@ import 'package:oakshelf/services/google_books_service.dart';
 import 'package:oakshelf/services/firebase_service.dart';
 import 'package:oakshelf/screens/home_screen.dart';
 import 'package:oakshelf/theme/theme.dart';
+import 'package:oakshelf/theme/theme_controller.dart';
 
 // Stub implementation of FirebaseService to bypass real native SDK checks during tests
 class MockFirebaseService implements FirebaseService {
@@ -14,7 +15,18 @@ class MockFirebaseService implements FirebaseService {
   String? get currentUid => 'mock-test-uid';
 
   @override
+  String get storageOwnerId => 'mock-test-uid';
+
+  @override
   Future<String?> signInAnonymously() async => 'mock-test-uid';
+
+  @override
+  Future<String?> ensureSignedIn({int maxAttempts = 3}) async =>
+      'mock-test-uid';
+
+  @override
+  Future<RestoreResult> restoreFromOwner(String legacyOwnerId) async =>
+      const RestoreResult(booksCopied: 0, quotesCopied: 0);
 
   @override
   Stream<List<Book>> getBookShelfStream() => Stream.value([]);
@@ -56,10 +68,15 @@ void main() {
   ) async {
     final mockFirebaseService = MockFirebaseService();
     final apiService = GoogleBooksService();
+    final themeController = ThemeController();
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(
-      MyApp(firebaseService: mockFirebaseService, apiService: apiService),
+      MyApp(
+        firebaseService: mockFirebaseService,
+        apiService: apiService,
+        themeController: themeController,
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -75,6 +92,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: OakShelfTheme.lightTheme,
+        darkTheme: OakShelfTheme.darkTheme,
         home: HomeScreen(
           firebaseService: mockFirebaseService,
           apiService: GoogleBooksService(),

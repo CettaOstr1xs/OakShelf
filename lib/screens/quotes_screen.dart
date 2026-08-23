@@ -52,7 +52,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
           ),
           child: Container(
             decoration: BoxDecoration(
-              color: theme.colorScheme.background,
+              color: theme.colorScheme.surface,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(24),
                 topRight: Radius.circular(24),
@@ -208,7 +208,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
                 Navigator.pop(context);
               }
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
             child: const Text('Delete'),
           ),
         ],
@@ -261,12 +261,12 @@ class _QuotesScreenState extends State<QuotesScreen> {
                             width: 44,
                             height: 44,
                             decoration: BoxDecoration(
-                              color: OakShelfTheme.sandColor,
+                              color: context.oak.sand,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.auto_stories_rounded,
-                              color: Color(0xFF9A6D00),
+                              color: context.oak.onAccent,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -306,7 +306,7 @@ class _QuotesScreenState extends State<QuotesScreen> {
                                 )
                               : null,
                           filled: true,
-                          fillColor: OakShelfTheme.surfaceColor,
+                          fillColor: Theme.of(context).colorScheme.surfaceContainerLowest.withValues(alpha: 0.7),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 12,
@@ -363,10 +363,14 @@ class _QuotesScreenState extends State<QuotesScreen> {
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 16),
                                   decoration: BoxDecoration(
-                                    color: OakShelfTheme.surfaceColor,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainerLowest
+                                        .withValues(alpha: 0.7),
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: OakShelfTheme.outlineColor,
+                                      color:
+                                          Theme.of(context).colorScheme.outline,
                                       width: 1.2,
                                     ),
                                     boxShadow: [
@@ -388,8 +392,9 @@ class _QuotesScreenState extends State<QuotesScreen> {
                                           Container(
                                             width: 5,
                                             color: index.isEven
-                                                ? OakShelfTheme.primaryColor
-                                                : OakShelfTheme.oceanBlueColor,
+                                                ? Theme.of(context)
+                                                    .colorScheme.primary
+                                                : context.oak.ocean,
                                           ),
 
                                           // Main Card Content (Balanced & Centered)
@@ -435,8 +440,9 @@ class _QuotesScreenState extends State<QuotesScreen> {
                                                                   .copy_rounded,
                                                               size: 17,
                                                             ),
-                                                            color: Colors
-                                                                .grey[500],
+                                                            color: theme
+                                                                .colorScheme
+                                                                .onSurfaceVariant,
                                                             tooltip:
                                                                 'Copy Quote',
                                                             onPressed: () =>
@@ -459,8 +465,9 @@ class _QuotesScreenState extends State<QuotesScreen> {
                                                                   .delete_outline_rounded,
                                                               size: 17,
                                                             ),
-                                                            color: Colors
-                                                                .grey[400],
+                                                            color: theme
+                                                                .colorScheme
+                                                                .onSurfaceVariant,
                                                             tooltip:
                                                                 'Delete Quote',
                                                             onPressed: () =>
@@ -486,9 +493,9 @@ class _QuotesScreenState extends State<QuotesScreen> {
                                                           fontWeight:
                                                               FontWeight.w500,
                                                           height: 1.45,
-                                                          color: const Color(
-                                                            0xFF1E293B,
-                                                          ),
+                                                          color: theme
+                                                              .colorScheme
+                                                              .onSurface,
                                                         ),
                                                   ),
                                                   const SizedBox(height: 12),

@@ -124,8 +124,8 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                     children: [
                       // Main Challenge Progress Card
                       NatureHeroCard(
-                        startColor: OakShelfTheme.forestDeep,
-                        endColor: OakShelfTheme.oceanBlueColor,
+                        startColor: context.oak.forestDeep,
+                        endColor: context.oak.ocean,
                         padding: const EdgeInsets.all(24),
                         child: Column(
                           children: [
@@ -134,9 +134,9 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.emoji_events_rounded,
-                                      color: OakShelfTheme.accentGoldColor,
+                                      color: context.oak.accent,
                                       size: 28,
                                     ),
                                     const SizedBox(width: 8),
@@ -146,7 +146,7 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                                           ?.copyWith(
                                             fontWeight: FontWeight.bold,
                                             letterSpacing: 1.2,
-                                            color: OakShelfTheme.skyColor,
+                                            color: context.oak.sky,
                                           ),
                                     ),
                                   ],
@@ -177,10 +177,9 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                                     backgroundColor: Colors.white.withValues(
                                       alpha: 0.18,
                                     ),
-                                    valueColor:
-                                        const AlwaysStoppedAnimation<Color>(
-                                          OakShelfTheme.accentGoldColor,
-                                        ),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      context.oak.accent,
+                                    ),
                                   ),
                                 ),
                                 Column(
@@ -198,7 +197,7 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                                       style: theme.textTheme.bodySmall
                                           ?.copyWith(
                                             fontWeight: FontWeight.w600,
-                                            color: OakShelfTheme.skyColor,
+                                            color: context.oak.sky,
                                           ),
                                     ),
                                   ],
@@ -268,30 +267,29 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                             horizontal: 16,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: theme
+                                .colorScheme.surfaceContainerLowest
+                                .withValues(alpha: 0.7),
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.grey[200]!),
+                            border: Border.all(color: theme.colorScheme.outline),
                           ),
                           child: Column(
                             children: [
                               Icon(
                                 Icons.library_books_rounded,
                                 size: 40,
-                                color: Colors.grey[300],
+                                color: theme.colorScheme.outline,
                               ),
                               const SizedBox(height: 10),
-                              const Text(
+                              Text(
                                 'No finished books logged yet.',
-                                style: TextStyle(color: Colors.grey),
+                                style: theme.textTheme.titleSmall,
                               ),
                               const SizedBox(height: 4),
-                              const Text(
+                              Text(
                                 'Mark books as "Finished" in your bookshelf to count towards your challenge!',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
+                                style: theme.textTheme.bodySmall,
                               ),
                             ],
                           ),
@@ -403,7 +401,7 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: theme.textTheme.bodySmall?.copyWith(
-                                      color: Colors.grey[600],
+                                      color: theme.colorScheme.onSurfaceVariant,
                                       fontSize: 10,
                                     ),
                                   ),
@@ -462,12 +460,12 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
       decoration: BoxDecoration(
         color: isUnlocked
             ? theme.colorScheme.primary.withOpacity(0.1)
-            : Colors.grey[100],
+            : theme.colorScheme.outlineVariant,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isUnlocked
               ? theme.colorScheme.primary.withOpacity(0.3)
-              : Colors.grey[300]!,
+              : theme.colorScheme.outline,
         ),
       ),
       child: Column(
@@ -475,7 +473,7 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
           Icon(
             icon,
             size: 32,
-            color: isUnlocked ? theme.colorScheme.primary : Colors.grey[400],
+            color: isUnlocked ? theme.colorScheme.primary : theme.colorScheme.outline,
           ),
           const SizedBox(height: 8),
           Text(
@@ -485,7 +483,7 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 12,
-              color: isUnlocked ? theme.colorScheme.primary : Colors.grey[600],
+              color: isUnlocked ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 2),
@@ -495,7 +493,7 @@ class _ReadingChallengeScreenState extends State<ReadingChallengeScreen> {
               fontSize: 10,
               color: isUnlocked
                   ? theme.colorScheme.primary.withOpacity(0.8)
-                  : Colors.grey[500],
+                  : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             ),
           ),
         ],

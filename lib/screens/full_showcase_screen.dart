@@ -4,7 +4,6 @@ import '../services/google_books_service.dart';
 import '../services/firebase_service.dart';
 import 'book_detail_screen.dart';
 import '../widgets/nature_ui.dart';
-import '../theme/theme.dart';
 
 class FullShowcaseScreen extends StatefulWidget {
   final ShelfStatus shelfStatus;
@@ -107,7 +106,7 @@ class _FullShowcaseScreenState extends State<FullShowcaseScreen> {
                                 )
                               : null,
                           filled: true,
-                          fillColor: OakShelfTheme.surfaceColor,
+                          fillColor: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.7),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 12,
@@ -135,7 +134,7 @@ class _FullShowcaseScreenState extends State<FullShowcaseScreen> {
                           Text(
                             'Showing ${filteredBooks.length} of ${shelfBooks.length} books',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
+                              color: theme.colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -219,7 +218,7 @@ class _FullShowcaseScreenState extends State<FullShowcaseScreen> {
                                         overflow: TextOverflow.ellipsis,
                                         style: theme.textTheme.bodySmall
                                             ?.copyWith(
-                                              color: Colors.grey[600],
+                                              color: theme.colorScheme.onSurfaceVariant,
                                               fontSize: 10,
                                             ),
                                       ),

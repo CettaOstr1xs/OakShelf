@@ -129,8 +129,7 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildUserHeader(BuildContext context, String tier) {
     final theme = Theme.of(context);
     return NatureHeroCard(
-      startColor: OakShelfTheme.forestDeep,
-      endColor: OakShelfTheme.primaryColor,
+      startColor: context.oak.forestDeep,
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
@@ -140,7 +139,7 @@ class ProfileScreen extends StatelessWidget {
             height: 70,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: OakShelfTheme.accentGoldColor, width: 2),
+              border: Border.all(color: context.oak.accent, width: 2),
               color: Colors.white.withValues(alpha: 0.12),
             ),
             child: const Icon(
@@ -166,7 +165,7 @@ class ProfileScreen extends StatelessWidget {
                 Text(
                   tier,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    color: OakShelfTheme.accentGoldColor,
+                    color: context.oak.accent,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -175,7 +174,7 @@ class ProfileScreen extends StatelessWidget {
                   'Cloud library connected',
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontSize: 10,
-                    color: OakShelfTheme.skyColor,
+                    color: context.oak.sky,
                   ),
                 ),
               ],
@@ -247,7 +246,7 @@ class ProfileScreen extends StatelessWidget {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey[150] ?? Colors.grey[200]!),
+        side: BorderSide(color: Theme.of(context).colorScheme.outline),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -273,7 +272,7 @@ class ProfileScreen extends StatelessWidget {
               value,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onBackground,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ],
@@ -397,7 +396,7 @@ class ProfileScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey[200]!),
+              border: Border.all(color: theme.colorScheme.outline),
             ),
             child: Text(
               'Shelved books will automatically categorize your top genres here!',

@@ -18,18 +18,19 @@ class NatureBackdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final oak = context.oak;
     return Stack(
       children: [
         Positioned.fill(
           child: DecoratedBox(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFFF1FAF4),
-                  Color(0xFFF9FBF4),
-                  Color(0xFFF5FAF4),
+                  oak.backdropTop,
+                  oak.backdropMid,
+                  oak.backdropBottom,
                 ],
                 stops: [0, 0.42, 1],
               ),
@@ -47,8 +48,8 @@ class NatureBackdrop extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    OakShelfTheme.accentGoldColor.withValues(alpha: 0.26),
-                    OakShelfTheme.accentGoldColor.withValues(alpha: 0),
+                    oak.accent.withValues(alpha: 0.26),
+                    oak.accent.withValues(alpha: 0),
                   ],
                 ),
               ),
@@ -62,7 +63,7 @@ class NatureBackdrop extends StatelessWidget {
             child: Icon(
               Icons.eco_rounded,
               size: 118,
-              color: OakShelfTheme.leafColor.withValues(alpha: 0.07),
+              color: oak.leaf.withValues(alpha: 0.09),
             ),
           ),
         ),
@@ -94,6 +95,7 @@ class NatureHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final oak = context.oak;
     final content = Container(
       width: double.infinity,
       clipBehavior: Clip.antiAlias,
@@ -102,14 +104,14 @@ class NatureHeroCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            startColor ?? OakShelfTheme.forestDeep,
-            endColor ?? OakShelfTheme.primaryColor,
+            startColor ?? oak.forestDeep,
+            endColor ?? Theme.of(context).colorScheme.primary,
           ],
         ),
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: OakShelfTheme.forestDeep.withValues(alpha: 0.2),
+            color: oak.forestDeep.withValues(alpha: 0.2),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -125,7 +127,7 @@ class NatureHeroCard extends StatelessWidget {
               height: 136,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: OakShelfTheme.accentGoldColor.withValues(alpha: 0.16),
+                color: oak.accent.withValues(alpha: 0.16),
               ),
             ),
           ),
@@ -243,9 +245,9 @@ class NatureEmptyState extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
       decoration: BoxDecoration(
-        color: OakShelfTheme.surfaceColor.withValues(alpha: 0.9),
+        color: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: OakShelfTheme.outlineColor),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -384,11 +386,12 @@ class NatureBookCover extends StatelessWidget {
   }
 
   Widget _fallback(BuildContext context) {
+    final oak = context.oak;
     final hue = title.codeUnits.fold<int>(0, (sum, value) => sum + value) % 3;
     final gradients = [
-      const [OakShelfTheme.forestDeep, OakShelfTheme.primaryColor],
+      [oak.forestDeep, Theme.of(context).colorScheme.primary],
       const [Color(0xFF0D526F), OakShelfTheme.oceanBlueColor],
-      const [Color(0xFF7B641C), OakShelfTheme.accentGoldColor],
+      [const Color(0xFF3A465E), oak.accent],
     ];
     return Container(
       padding: const EdgeInsets.all(10),

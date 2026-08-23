@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/google_books_service.dart';
 import '../services/firebase_service.dart';
+import '../theme/theme_controller.dart';
 import 'dashboard_feed_screen.dart';
 import 'home_screen.dart'; // Library / Bookshelves Screen
 import 'quotes_screen.dart';
@@ -12,11 +13,13 @@ import '../theme/theme.dart';
 class MainNavigationContainer extends StatefulWidget {
   final FirebaseService firebaseService;
   final GoogleBooksService apiService;
+  final ThemeController themeController;
 
   const MainNavigationContainer({
     super.key,
     required this.firebaseService,
     required this.apiService,
+    required this.themeController,
   });
 
   @override
@@ -37,6 +40,7 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
       DashboardFeedScreen(
         firebaseService: widget.firebaseService,
         apiService: widget.apiService,
+        themeController: widget.themeController,
       ),
       HomeScreen(
         firebaseService: widget.firebaseService,
@@ -94,7 +98,7 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
       builder: (context) {
         return Container(
           decoration: BoxDecoration(
-            color: theme.colorScheme.background,
+            color: theme.colorScheme.surface,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(24),
               topRight: Radius.circular(24),
@@ -116,7 +120,7 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: theme.colorScheme.outline,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -139,9 +143,11 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: theme.colorScheme.surfaceContainerLowest.withValues(
+                      alpha: 0.7,
+                    ),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey[200]!),
+                    border: Border.all(color: theme.colorScheme.outline),
                   ),
                   child: Row(
                     children: [
@@ -187,7 +193,7 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
                           ],
                         ),
                       ),
-                      Icon(Icons.chevron_right, color: Colors.grey[400]),
+                      Icon(Icons.chevron_right, color: theme.colorScheme.outline),
                     ],
                   ),
                 ),
@@ -217,7 +223,7 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
                   );
                 },
               ),
-              Divider(height: 1, color: Colors.grey[100]),
+              Divider(height: 1, color: theme.colorScheme.outlineVariant),
               ListTile(
                 leading: Icon(
                   Icons.settings_outlined,
@@ -250,6 +256,7 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     // Map current index in page view (which has 3 items)
     // to active state index on bottom bar
     int getSelectedBarIndex() {
@@ -293,18 +300,17 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
                     margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
                     height: 72,
                     decoration: BoxDecoration(
-                      color: OakShelfTheme.surfaceColor.withValues(alpha: 0.98),
+                      color: theme.colorScheme.surface.withValues(alpha: 0.98),
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
-                          color: OakShelfTheme.forestDeep.withValues(
-                            alpha: 0.16,
-                          ),
+                          color:
+                              context.oak.forestDeep.withValues(alpha: 0.16),
                           blurRadius: 24,
                           offset: const Offset(0, 10),
                         ),
                       ],
-                      border: Border.all(color: OakShelfTheme.outlineColor),
+                      border: Border.all(color: theme.colorScheme.outline),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -361,15 +367,15 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: OakShelfTheme.accentGoldColor,
+                            color: context.oak.accent,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: OakShelfTheme.surfaceColor,
+                              color: theme.colorScheme.surface,
                               width: 4,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: OakShelfTheme.forestDeep.withValues(
+                                color: context.oak.forestDeep.withValues(
                                   alpha: 0.22,
                                 ),
                                 blurRadius: 14,
@@ -377,9 +383,9 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
                               ),
                             ],
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.search_rounded,
-                            color: OakShelfTheme.textDarkColor,
+                            color: context.oak.onAccent,
                             size: 28,
                           ),
                         ),

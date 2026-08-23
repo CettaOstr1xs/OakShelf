@@ -57,3 +57,13 @@ To run this project locally, ensure you have the Flutter SDK installed on your m
    ```bash
    flutter run
    ```
+
+---
+
+## Library Recovery
+
+OakShelf pins its Firestore storage location to a **Storage ID** (visible in
+*Settings*) so anonymous auth session resets can no longer hide your books or
+quotes. If a library was stranded under an older account ID, open
+**Settings → Library Recovery**, paste the old UID (Firebase Console →
+Authentication → Users), and tap **Restore Library**.
